@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+
+    /* Glassmorphism Effect */
+    .glass-card {
+        @apply bg-white/70 backdrop-blur-md border border-white/30 shadow-xl;
+    }
+
+    /* Gradient Text */
+    .gradient-text {
+        @apply bg-clip-text text-transparent bg-gradient-to-br from-indigo-600 to-purple-700;
+    }
+
+    .gradient-text-emerald {
+        @apply bg-clip-text text-transparent bg-gradient-to-br from-emerald-600 to-teal-700;
+    }
+
+    /* Hover Lift Effect */
+    .hover-lift {
+        @apply transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-2xl;
+    }
+
+    /* Gradient Backgrounds */
+    .bg-gradient-primary {
+        @apply bg-gradient-to-br from-indigo-600 to-purple-700 text-white;
+    }
+
+    .bg-gradient-success {
+        @apply bg-gradient-to-br from-emerald-500 to-teal-600 text-white;
+    }
+
+    .bg-gradient-accent {
+        @apply bg-gradient-to-br from-amber-500 to-orange-600 text-white;
+    }
+
+    /* Animated Gradient Border */
+    .gradient-border {
+        @apply relative bg-white rounded-2xl;
+    }
+
+    .gradient-border::before {
+        content: '';
+        @apply absolute -inset-[2px] rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-indigo-500 opacity-0 transition-opacity duration-300 -z-10;
+        background-size: 200% 200%;
+        animation: gradient-rotate 3s linear infinite;
+    }
+
+    .gradient-border:hover::before {
+        @apply opacity-100;
+    }
+
+    /* Input Styles - Robust */
+    .input-robust {
+        @apply block w-full rounded-xl border-2 border-gray-300 shadow-sm focus:border-indigo-600 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 px-4 py-3 text-lg font-medium text-gray-900 bg-white hover:border-gray-400;
+    }
+
+    select.input-robust {
+        @apply appearance-none bg-no-repeat pr-10 rtl:pr-4 rtl:pl-10;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.5rem center;
+        background-size: 1.5em 1.5em;
+    }
+
+    [dir="rtl"] select.input-robust {
+        background-position: left 0.5rem center;
+    }
+
+    .label-robust {
+        @apply block text-sm font-bold text-gray-800 mb-2 uppercase tracking-wide;
+    }
+}
+
+@keyframes gradient-rotate {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.page-transition {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.count-up {
+    animation: fadeInUp 0.6s ease-out;
+}
