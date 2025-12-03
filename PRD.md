@@ -34,13 +34,13 @@ The platform targets:
 
 ## **2.2 Manual Exchange Rate Management (Admin)**
 
-* Admin users can override API-provided rates.
-* **Manual rates are set against YER (Yemeni Rial) only** - all other conversions are calculated through cross-rates.
-* Manual overrides stored as backup rates in `api_settings` table.
-* Admin interface includes:
-  * Currency list management
-  * Manual value entry per currency (vs YER)
-  * Activation/deactivation of manual overrides
+* Admin users can configure backup rates for YER conversions.
+* **Backup rates are set for YER (Yemeni Rial) conversions only** - cross-currency conversions use live API data.
+* Manual backup rates stored in dedicated `backup_rates` table.
+* Admin interface (`/admin/backup-rates`) includes:
+  * Currency list for all supported currencies vs YER
+  * Separate **Buy Rate** and **Sell Rate** entry for each currency
+  * Real-time validation and saving
   * Audit logs for changes (recent admin activity)
 
 ## **2.3 Multi-Currency Comparison**
@@ -110,12 +110,14 @@ Admin panel (`/admin/*`) includes:
 
 ## **3.3 Backup Rate Controls**
 
-* CRUD interface for manual exchange rates (vs YER).
-* Backup rates stored in `api_settings` table.
-* Used as fallback when API fails.
-* Toggle between:
-  * Live API mode
-  * Manual backup mode
+* Dedicated page: `/admin/backup-rates`
+* CRUD interface for YER buy/sell rates.
+* Backup rates stored in dedicated `backup_rates` table with:
+  * `currency` (SAR, USD, OMR, AED, KWD)
+  * `buy_rate` (Foreign → YER)
+  * `sell_rate` (YER → Foreign)
+* Always used for YER conversions (not conditional on API failure).
+* Cross-currency conversions use API data (with historical fallback).
 
 ## **3.4 User Management**
 
@@ -125,11 +127,13 @@ Admin panel (`/admin/*`) includes:
 
 ## **3.5 API Settings Management**
 
+* Dedicated page: `/admin/api-settings`
 * Configure API provider (`api_provider`).
 * Set API key (`api_key`).
 * Configure cache duration (`cache_duration` in minutes).
 * Enable/disable API (`api_enabled` boolean).
-* **Backup rates** for all currencies vs YER.
+* Test API connection with real-time validation.
+* **Note:** Backup rates managed separately in `/admin/backup-rates`.
 
 ## **3.6 Audit Logs**
 
@@ -267,11 +271,18 @@ Users can choose:
 
 ### **api_settings**
 * id
-* key (e.g., 'api_provider', 'api_key', 'cache_duration', 'api_enabled', backup rates)
+* key (e.g., 'api_provider', 'api_key', 'cache_duration', 'api_enabled')
 * value
 * created_at, updated_at
 
-**Backup rates stored as:** `backup_rate_SAR`, `backup_rate_USD`, etc.
+### **backup_rates** *(NEW)*
+* id
+* currency (SAR, USD, OMR, AED, KWD - unique)
+* buy_rate (decimal: Foreign → YER rate)
+* sell_rate (decimal: YER → Foreign rate)
+* created_at, updated_at
+
+**Note:** Buy and sell rates are stored separately for precision.
 
 ### **admin_logs**
 * id
@@ -320,7 +331,11 @@ Stored in `api_settings` table:
 * `api_key` - API authentication key
 * `cache_duration` - Cache time in minutes (e.g., 60)
 * `api_enabled` - Toggle API on/off
-* `backup_rate_*` - Backup rates for each currency vs YER
+
+Stored in `backup_rates` table:
+
+* `buy_rate` and `sell_rate` for each currency vs YER
+* Managed via `/admin/backup-rates` interface
 
 ## **8.3 API Failure Modes**
 
@@ -333,26 +348,29 @@ Stored in `api_settings` table:
 
 # **9. Buy/Sell Rate Logic**
 
-**All rates stored as sell rates (YER → Foreign Currency)**
+**Buy and Sell rates stored separately in `backup_rates` table**
 
 ### **Conversion Logic:**
 
 1. **Foreign → YER:**
-   * Use **buy rate** = `1 / sell_rate`
-   * Example: If USD sell = 250 YER, then USD buy = 1/250
+   * Use **buy rate** from `backup_rates` table
+   * Example: 1 SAR → YER = 1 × 425 = 425 YER (buy_rate = 425)
 
 2. **YER → Foreign:**
-   * Use **sell rate** directly from database
+   * Use **sell rate** from `backup_rates` table
+   * Example: 1 YER → SAR = 1 / 428 = 0.0023 SAR (sell_rate = 428)
 
 3. **Foreign → Foreign (Cross Rate):**
-   * Convert through YER as intermediary
-   * Example: USD → SAR = (USD → YER) × (YER → SAR)
+   * Use live API rates (primary)
+   * Fallback to historical rates if API unavailable
+   * Example: USD → SAR via API (not through YER)
 
 ### **Manual Rate Entry:**
 
-* Admin enters **sell rates only** (YER → Foreign)
-* System calculates buy rates automatically
-* Cross-rates calculated dynamically
+* Admin enters **both buy and sell rates** for each currency vs YER
+* No automatic calculation between buy/sell (independent values)
+* Rates managed via `/admin/backup-rates` interface
+* Default rates seeded via `BackupRatesSeeder`
 
 ---
 
@@ -384,6 +402,25 @@ Stored in `api_settings` table:
 * Language changes trigger automatic direction update
 * No page refresh required
 * Powered by Turbo.js event listeners
+
+## **10.6 Backup Rates System Overhaul**
+* Migrated from `api_settings` to dedicated `backup_rates` table
+* Separate Buy/Sell rate storage for each currency
+* Admin interface at `/admin/backup-rates` for easy management
+* Seeder (`BackupRatesSeeder`) for default rates
+* Rates persist through `migrate:fresh --seed`
+
+## **10.7 API Settings Enhancement**
+* New dedicated page: `/admin/api-settings`
+* Real-time API connection testing
+* Simplified configuration interface
+* Clear separation from backup rates management
+
+## **10.8 Mobile UI Optimization**
+* **Responsive Tables → Cards:** All data tables transform into elegant cards on mobile
+* **Smart Number Handling:** Large numbers auto-resize and wrap gracefully
+* **Touch-Optimized:** Buttons and inputs sized for mobile interaction
+* **Adaptive Font Sizes:** Text scales appropriately across devices
 
 ---
 

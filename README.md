@@ -187,7 +187,7 @@ php artisan tinker
 
 ### API Settings
 
-Configure these settings in the `api_settings` table or through the admin panel:
+Configure these settings through the admin panel (`/admin/api-settings`):
 
 | Key | Description | Example |
 |-----|-------------|---------|
@@ -195,21 +195,17 @@ Configure these settings in the `api_settings` table or through the admin panel:
 | `api_key` | Your API key | `abc123...` |
 | `cache_duration` | Cache time in minutes | `60` |
 | `api_enabled` | Toggle API on/off | `true` or `false` |
-| `backup_rate_SAR` | Backup rate for SAR→YER | `66.50` |
-| `backup_rate_USD` | Backup rate for USD→YER | `250.00` |
 
 ### Backup Rates
 
-All backup rates are stored as **sell rates** (YER → Foreign Currency). The system automatically:
-- Calculates buy rates (Foreign → YER) as `1 / sell_rate`
-- Computes cross-rates (Foreign → Foreign) through YER as intermediary
+Backup rates are now managed via a dedicated table `backup_rates` and can be configured in the admin panel (`/admin/backup-rates`).
 
-Example:
-```
-USD sell rate = 250 YER
-USD buy rate = 1/250 = 0.004 USD per YER
-USD → SAR = (USD → YER) × (YER → SAR)
-```
+The system stores distinct **Buy** and **Sell** rates for each currency against YER:
+
+| Currency | Buy Rate (Foreign → YER) | Sell Rate (YER → Foreign) |
+|----------|--------------------------|---------------------------|
+| SAR | 425.00 | 428.00 |
+| USD | 1617.00 | 1632.00 |
 
 ---
 
@@ -245,7 +241,7 @@ Navigate to: [http://localhost:8000/admin/dashboard](http://localhost:8000/admin
 
 Default credentials (if you seeded):
 - Email: `admin@tabdil.com`
-- Password: (whatever you set)
+- Password: `admin123`
 
 ---
 
@@ -261,31 +257,30 @@ change_currency/
 │   │   │   └── FavoriteController.php
 │   │   └── Middleware/
 │   ├── Models/
+│   │   ├── BackupRate.php
+│   │   ├── ExchangeRate.php
+│   │   └── User.php
 │   └── Services/
 │       └── CurrencyConversionService.php
 ├── database/
-│   └── migrations/
+│   ├── migrations/
+│   │   └── ..._create_backup_rates_table.php
+│   └── seeders/
+│       └── BackupRatesSeeder.php
 ├── public/
-│   ├── images/
-│   │   └── logo.png
-│   └── build/
 ├── resources/
-│   ├── css/
 │   ├── js/
-│   │   └── app.js (Turbo.js integration)
+│   │   └── app.js
 │   ├── views/
 │   │   ├── admin/
+│   │   │   ├── api-settings.blade.php
+│   │   │   ├── backup-rates.blade.php
+│   │   │   └── dashboard.blade.php
 │   │   ├── currency/
 │   │   └── layouts/
-│   └── lang/
-│       ├── ar/
-│       └── en/
 ├── routes/
 │   └── web.php
 ├── .env
-├── package.json
-├── vite.config.js
-├── PRD.md
 └── README.md
 ```
 
@@ -295,13 +290,23 @@ change_currency/
 
 ### Buy/Sell Rate Logic
 
-TABDIL uses a sophisticated rate calculation system:
+TABDIL uses a hybrid rate calculation system:
 
-1. **All rates stored as sell rates** (YER → Foreign)
-2. **Buy rates calculated dynamically** as inverse of sell rate
-3. **Cross-rates computed through YER** as intermediary currency
+1.  **YER Conversions:**
+    *   **Foreign → YER:** Uses the **Buy Rate** from `backup_rates` table.
+    *   **YER → Foreign:** Uses the **Sell Rate** from `backup_rates` table.
+    *   *Note: These rates are manually set by the admin.*
 
-This ensures consistency and accuracy across all conversions.
+2.  **Cross-Currency Conversions (e.g., USD → SAR):**
+    *   Primary: Uses real-time rates from the external API.
+    *   Fallback: Uses historical rates if API is unavailable.
+
+### Mobile Responsiveness
+
+The platform features a highly adaptive UI:
+- **Responsive Tables:** Data tables automatically transform into elegant **Cards** on mobile devices for better readability.
+- **Smart Text Handling:** Large numbers automatically wrap or resize to fit small screens without breaking the layout.
+- **Touch-Friendly:** Buttons and inputs are sized for touch interaction.
 
 ### Turbo.js Integration
 
@@ -313,11 +318,10 @@ The platform uses Turbo.js for:
 
 ### Fallback Mechanism
 
-If the exchangerate-api fails:
-1. System uses backup rates from `api_settings` table
-2. Admin is notified via dashboard
-3. Conversions continue uninterrupted
-4. Last update timestamp shown to users
+If the exchangerate-api fails or is disabled:
+1. System seamlessly switches to stored backup rates for YER.
+2. Cross-currency conversions may use cached or historical data.
+3. Admin can test API connection status directly from the dashboard.
 
 ---
 
