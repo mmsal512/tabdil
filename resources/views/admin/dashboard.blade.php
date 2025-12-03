@@ -34,7 +34,8 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
+                    <!-- Desktop Table -->
+                    <div class="hidden md:block overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
@@ -47,7 +48,7 @@
                                 @forelse($recentLogs as $log)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-center font-semibold">{{ $log->admin->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-center">{{ $log->action }}</td>
+                                        <td class="px-6 py-4 text-center break-words">{{ $log->action }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-center text-gray-600">{{ $log->created_at->diffForHumans() }}</td>
                                     </tr>
                                 @empty
@@ -57,6 +58,24 @@
                                 @endforelse
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Mobile Cards -->
+                    <div class="md:hidden space-y-4">
+                        @forelse($recentLogs as $log)
+                            <div class="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-100">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="font-bold text-gray-800">{{ $log->admin->name }}</div>
+                                    <div class="text-xs text-gray-500">{{ $log->created_at->diffForHumans() }}</div>
+                                </div>
+                                <div class="text-sm text-gray-600 break-words">
+                                    <span class="font-medium text-gray-500">{{ __('Action:') }}</span>
+                                    {{ $log->action }}
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center text-gray-500 py-4">{{ __('No logs found.') }}</div>
+                        @endforelse
                     </div>
                 </div>
             </div>
