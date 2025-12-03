@@ -426,8 +426,8 @@
                                     card.className = 'bg-white p-4 rounded-xl shadow-sm border border-gray-100';
                                     card.innerHTML = `
                                         <div class="flex justify-between items-center mb-2">
-                                            <span class="font-bold text-gray-900">${currencyName}</span>
-                                            <span class="text-indigo-600 font-bold text-lg">${formattedAmount}</span>
+                                            <span class="font-bold text-gray-900 whitespace-nowrap mr-2">${currencyName}</span>
+                                            <span class="text-indigo-600 font-bold text-lg break-all text-right">${formattedAmount}</span>
                                         </div>
                                         <div class="text-sm text-gray-500 flex justify-between">
                                             <span>{{ __('Rate') }} (1):</span>
