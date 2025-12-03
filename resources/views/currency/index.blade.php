@@ -425,11 +425,11 @@
                                     const card = document.createElement('div');
                                     card.className = 'bg-white p-4 rounded-xl shadow-sm border border-gray-100';
                                     card.innerHTML = `
-                                        <div class="flex justify-between items-center mb-2">
-                                            <span class="font-bold text-gray-900 whitespace-nowrap mr-2">${currencyName}</span>
-                                            <span class="text-indigo-600 font-bold text-lg break-all text-right">${formattedAmount}</span>
+                                        <div class="flex flex-wrap justify-between items-end mb-2 gap-x-2">
+                                            <span class="font-bold text-gray-900 whitespace-nowrap">${currencyName}</span>
+                                            <span class="text-indigo-600 font-bold text-lg break-all text-right flex-1 min-w-[50%]">${formattedAmount}</span>
                                         </div>
-                                        <div class="text-sm text-gray-500 flex justify-between">
+                                        <div class="text-sm text-gray-500 flex justify-between border-t border-gray-100 pt-2 mt-1">
                                             <span>{{ __('Rate') }} (1):</span>
                                             <span>${item.rate}</span>
                                         </div>
