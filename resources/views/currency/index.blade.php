@@ -84,7 +84,7 @@
                                 <div id="converter-loader" class="hidden absolute inset-0 flex items-center justify-center">
                                     <div class="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
                                 </div>
-                                <p class="text-6xl font-black text-white count-up tracking-tight drop-shadow-md" id="result">---</p>
+                                <p class="text-4xl md:text-6xl font-black text-white count-up tracking-tight drop-shadow-md break-all leading-tight" id="result">---</p>
                             </div>
                             <p class="text-indigo-200 mt-3 font-medium text-lg" id="rate-info"></p>
                             
