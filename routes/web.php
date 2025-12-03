@@ -68,8 +68,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/backup-rates', [AdminController::class, 'backupRates'])->name('backup-rates');
     Route::post('/backup-rates', [AdminController::class, 'updateBackupRates'])->name('backup-rates.update');
     
-    // API Backup Rates Route
-    Route::get('/api-backup-rates', [AdminController::class, 'apiBackupRates'])->name('api-backup-rates');
+    // API Settings Routes
+    Route::get('/api-settings', [AdminController::class, 'apiSettings'])->name('api-settings');
+    Route::post('/api-settings', [AdminController::class, 'updateApiSettings'])->name('api-settings.update');
+    Route::post('/test-api-connection', [AdminController::class, 'testApiConnection'])->name('test-api-connection');
     
     // User Management Routes
     Route::get('/users', [AdminController::class, 'users'])->name('users');

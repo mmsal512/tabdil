@@ -15,6 +15,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Seed backup rates first
+        $this->call([
+            BackupRatesSeeder::class,
+        ]);
+
         // User::factory(10)->create();
 
         User::factory()->create([

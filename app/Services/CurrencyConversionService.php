@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Models\ExchangeRate;
+use App\Models\BackupRate;
 
 class CurrencyConversionService
 {
@@ -234,24 +235,14 @@ class CurrencyConversionService
         return Cache::remember("buy_sell_rates_yer", 3600, function () {
             $rates = [];
             
-            // Fetch all rates from database
-            // Note: In the database, for manual rates (source='manual'), we stored them as Unit/YER (e.g. 0.00235)
-            // BUT the user input was YER/Unit (e.g. 425).
-            // In AdminController::updateBackupRates, we did: $storedValue = (1 / $value);
-            // So to get back the "425" (YER per Unit), we need to invert it back: 1 / storedValue.
-            
-            $dbRates = ExchangeRate::where('base_currency', 'YER')
-                ->whereIn('type', ['buy', 'sell'])
-                ->get();
+            // Fetch from new backup_rates table
+            $backupRates = BackupRate::all();
                 
-            foreach ($dbRates as $rate) {
-                $val = (float) $rate->rate_value;
-                // Invert back to get "YER per Unit" if it's a small decimal (standard storage)
-                // If it's already > 1, it might be stored directly (legacy), but our current logic stores 1/X.
-                // Let's assume standard storage 1/X.
-                $realRate = ($val > 0) ? (1 / $val) : 0;
-                
-                $rates[$rate->target_currency][$rate->type] = $realRate;
+            foreach ($backupRates as $rate) {
+                $rates[$rate->currency] = [
+                    'buy' => (float) $rate->buy_rate,
+                    'sell' => (float) $rate->sell_rate,
+                ];
             }
             
             return $rates;
