@@ -4,6 +4,9 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Admin Dashboard') }}
             </h2>
+            <a href="{{ route('currency.index') }}" class="text-sm text-gray-600 hover:text-gray-900">
+                ← {{ __('Currency Converter') }}
+            </a>
         </div>
     </x-slot>
 
