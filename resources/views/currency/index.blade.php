@@ -198,7 +198,8 @@
                     <!-- <p class="text-gray-600">{{ __('See how :currency  compares to other currencies ', ['currency ' => '']) }}<span id="comparison-base-display" class="font-bold">USD</span></p> -->
                 </div>
                 
-                <div class="overflow-hidden rounded-xl shadow-lg border-2 border-gray-100">
+                <!-- Desktop Table -->
+                <div class="hidden md:block overflow-hidden rounded-xl shadow-lg border-2 border-gray-100">
                     <table class="min-w-full">
                         <thead class="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
                             <tr>
@@ -214,6 +215,11 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Mobile Cards -->
+                <div class="md:hidden space-y-4" id="comparison-cards-container">
+                    <div class="text-center text-gray-500 py-4">{{ __('Loading comparison rates...') }}</div>
                 </div>
             </div>
                 </div>
@@ -390,8 +396,10 @@
                 .then(data => {
                     console.log('Comparison data:', data);
                     if (data.success) {
-                        // Clear table
+                        // Clear table and cards
                         comparisonTableBody.innerHTML = '';
+                        const cardsContainer = document.getElementById('comparison-cards-container');
+                        if (cardsContainer) cardsContainer.innerHTML = '';
                         
                         // Load all rows at once (no progressive loading)
                         data.comparisons.forEach((item) => {
@@ -402,6 +410,7 @@
                                     minimumFractionDigits: 0
                                 });
                                 
+                                // Add Row to Desktop Table
                                 const row = document.createElement('tr');
                                 row.className = 'hover:bg-gray-50 transition-colors duration-150';
                                 row.innerHTML = `
@@ -410,6 +419,23 @@
                                     <td class="px-8 py-5 whitespace-nowrap text-indigo-600 font-bold text-lg text-center">${formattedAmount}</td>
                                 `;
                                 comparisonTableBody.appendChild(row);
+
+                                // Add Card to Mobile View
+                                if (cardsContainer) {
+                                    const card = document.createElement('div');
+                                    card.className = 'bg-white p-4 rounded-xl shadow-sm border border-gray-100';
+                                    card.innerHTML = `
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="font-bold text-gray-900">${currencyName}</span>
+                                            <span class="text-indigo-600 font-bold text-lg">${formattedAmount}</span>
+                                        </div>
+                                        <div class="text-sm text-gray-500 flex justify-between">
+                                            <span>{{ __('Rate') }} (1):</span>
+                                            <span>${item.rate}</span>
+                                        </div>
+                                    `;
+                                    cardsContainer.appendChild(card);
+                                }
                         });
                     } else {
                         console.error('Comparison failed:', data);

@@ -127,6 +127,10 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('currency.index')" :active="request()->routeIs('currency.index')">
+                {{ __('Currency Converter') }}
+            </x-responsive-nav-link>
             
             @auth
                 @if(Auth::user()->user_type === 'admin')

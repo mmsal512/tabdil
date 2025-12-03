@@ -38,7 +38,7 @@
                         <p class="text-gray-500">{{ __("You haven't saved any favorites yet.") }}</p>
                         <a href="{{ route('currency.index') }}" class="text-indigo-600 hover:text-indigo-900 mt-2 inline-block">{{ __('Go to Converter') }}</a>
                     @else
-                        <div class="overflow-hidden rounded-xl shadow-lg border-2 border-gray-100">
+                        <div class="overflow-hidden rounded-xl shadow-lg border-2 border-gray-100 overflow-x-auto">
                             <table class="min-w-full">
                                 <thead class="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
                                     <tr>
