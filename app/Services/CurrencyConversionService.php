@@ -51,6 +51,7 @@ class CurrencyConversionService
             'freecurrencyapi' => 'https://api.freecurrencyapi.com/v1/latest',
             'exchangerate-api' => 'https://v6.exchangerate-api.com/v6/latest/',
             'fixer' => 'http://data.fixer.io/api/latest',
+            'openexchangerates' => 'https://openexchangerates.org/api/latest.json',
         ];
         
         return $urls[$provider] ?? $urls['exchangerate-api'];
@@ -286,6 +287,11 @@ class CurrencyConversionService
                     $params['base'] = $base;
                     break;
                     
+                case 'openexchangerates':
+                    $params['app_id'] = $apiKey;
+                    $params['base'] = $base;
+                    break;
+                    
                 case 'exchangerate-api':
                 default:
                     // This API doesn't require a key for basic usage
@@ -302,6 +308,7 @@ class CurrencyConversionService
                 $rates = match($provider) {
                     'freecurrencyapi' => $data['data'] ?? [],
                     'fixer' => $data['rates'] ?? [],
+                    'openexchangerates' => $data['rates'] ?? [],
                     default => $data['rates'] ?? [],
                 };
                 

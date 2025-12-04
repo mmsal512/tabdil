@@ -34,6 +34,7 @@
                                     <option value="exchangerate-api" {{ ($settings['api_provider'] ?? '') == 'exchangerate-api' ? 'selected' : '' }}>ExchangeRate-API</option>
                                     <option value="freecurrencyapi" {{ ($settings['api_provider'] ?? '') == 'freecurrencyapi' ? 'selected' : '' }}>FreeCurrencyAPI</option>
                                     <option value="fixer" {{ ($settings['api_provider'] ?? '') == 'fixer' ? 'selected' : '' }}>Fixer.io</option>
+                                    <option value="openexchangerates" {{ ($settings['api_provider'] ?? '') == 'openexchangerates' ? 'selected' : '' }}>Open Exchange Rates</option>
                                 </select>
                             </div>
 
