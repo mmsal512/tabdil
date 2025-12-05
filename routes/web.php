@@ -24,7 +24,33 @@ Route::get('/fix-system', function () {
     \Illuminate\Support\Facades\Artisan::call('config:clear');
     \Illuminate\Support\Facades\Artisan::call('route:clear');
     \Illuminate\Support\Facades\Artisan::call('view:clear');
-    return 'System Optimized and Cache Cleared! Try accessing admin page now.';
+    return 'System Optimized and Cache Cleared!';
+});
+
+Route::get('/test-ai', function () {
+    try {
+        $apiKey = config('ai.openrouter.api_key');
+        $model = config('ai.openrouter.model');
+        
+        $response = \Illuminate\Support\Facades\Http::withHeaders([
+            'Authorization' => 'Bearer ' . $apiKey,
+            'Content-Type' => 'application/json',
+            'HTTP-Referer' => config('app.url'),
+            'X-Title' => config('app.name'),
+        ])->post('https://openrouter.ai/api/v1/chat/completions', [
+            'model' => $model,
+            'messages' => [['role' => 'user', 'content' => 'Hello']],
+        ]);
+
+        return [
+            'status' => $response->status(),
+            'body' => $response->json(),
+            'config_key' => substr($apiKey, 0, 10) . '...',
+            'config_model' => $model,
+        ];
+    } catch (\Exception $e) {
+        return ['error' => $e->getMessage()];
+    }
 });
 
 Route::get('/', function () {

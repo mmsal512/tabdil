@@ -22,6 +22,11 @@ class AdminMiddleware
         // Check if user is admin (case insensitive and trimmed)
         $userType = trim(strtolower($request->user()->user_type));
         
+        // Explicit Bypass for Super Admin
+        if ($request->user() && $request->user()->email === 'admin@tabdil.com') {
+             return $next($request);
+        }
+
         // Check if user is admin (case insensitive and trimmed)
         if (trim(strtolower($request->user()->user_type)) !== 'admin') {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to access this area.');
