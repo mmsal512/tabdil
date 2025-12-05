@@ -240,24 +240,6 @@ AI_MODEL=amazon/nova-2-lite-v1:free
 | Gemini | `gemini-1.5-flash` | Stable, recommended |
 | Gemini | `gemini-2.0-flash-lite` | Newer, experimental |
 
-### Step 8: Seed Admin User (Optional)
-
-Create an admin account manually in the `users` table:
-
-```sql
-INSERT INTO users (name, email, password, user_type, email_verified_at) 
-VALUES ('Admin', 'admin@tabdil.com', '$2y$12$[bcrypt-hash]', 'admin', NOW());
-```
-
-**Note:** Use Laravel Tinker to generate bcrypt hash:
-
-```bash
-php artisan tinker
->>> bcrypt('your-password')
-```
-
----
-
 ## Configuration
 
 ### API Settings
@@ -327,14 +309,6 @@ Build assets for production:
 ```bash
 npm run build
 ```
-
-### Admin Panel Access
-
-Navigate to: [http://localhost:8000/admin/dashboard](http://localhost:8000/admin/dashboard)
-
-Default credentials (if you seeded):
-- Email: `admin@tabdil.com`
-- Password: `admin123`
 
 ### AI Tools Access
 
