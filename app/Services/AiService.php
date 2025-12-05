@@ -18,26 +18,27 @@ class AiService
 
     public function __construct()
     {
+        // Fix: Use correct config key 'ai.provider' instead of 'ai.default'
         $this->provider = config('ai.provider', 'openrouter');
         
         if ($this->provider === 'openrouter') {
-            $this->apiKey = config('ai.openrouter.api_key');
-            $this->model = config('ai.openrouter.model');
-            $this->baseUrl = config('ai.openrouter.base_url');
-            $this->maxTokens = config('ai.openrouter.max_tokens');
-            $this->temperature = config('ai.openrouter.temperature');
+            $this->apiKey = config('ai.openrouter.api_key', '');
+            $this->model = config('ai.openrouter.model', 'google/gemini-2.0-flash-exp:free');
+            $this->baseUrl = config('ai.openrouter.base_url', 'https://openrouter.ai/api/v1');
+            $this->maxTokens = (int) config('ai.openrouter.max_tokens', 2048);
+            $this->temperature = (float) config('ai.openrouter.temperature', 0.7);
         } elseif ($this->provider === 'gemini') {
-            $this->apiKey = config('ai.gemini.api_key');
-            $this->model = config('ai.gemini.model');
-            $this->baseUrl = config('ai.gemini.base_url');
-            $this->maxTokens = config('ai.gemini.max_tokens');
-            $this->temperature = config('ai.gemini.temperature');
+            $this->apiKey = config('ai.gemini.api_key', '');
+            $this->model = config('ai.gemini.model', 'gemini-1.5-flash');
+            $this->baseUrl = config('ai.gemini.base_url', 'https://generativelanguage.googleapis.com/v1beta');
+            $this->maxTokens = (int) config('ai.gemini.max_tokens', 2048);
+            $this->temperature = (float) config('ai.gemini.temperature', 0.7);
         } else {
-            $this->apiKey = config('ai.openai.api_key');
-            $this->model = config('ai.openai.model');
-            $this->baseUrl = config('ai.openai.base_url');
-            $this->maxTokens = config('ai.openai.max_tokens');
-            $this->temperature = config('ai.openai.temperature');
+            $this->apiKey = config('ai.openai.api_key', '');
+            $this->model = config('ai.openai.model', 'gpt-4');
+            $this->baseUrl = config('ai.openai.base_url', 'https://api.openai.com/v1');
+            $this->maxTokens = (int) config('ai.openai.max_tokens', 2048);
+            $this->temperature = (float) config('ai.openai.temperature', 0.7);
         }
     }
 
@@ -145,8 +146,6 @@ class AiService
             $messages = [];
             
             if ($systemPrompt) {
-                // For OpenRouter/Gemini model compatibility, sometimes 'system' role is needed, 
-                // but some models prefer it in 'user' prompt. We'll stick to 'system' first.
                 $messages[] = ['role' => 'system', 'content' => $systemPrompt];
             }
             
@@ -157,33 +156,37 @@ class AiService
                 'Content-Type' => 'application/json',
             ];
 
-            // Add OpenRouter specific headers - This logic was proven working in /test-ai
+            // Add OpenRouter specific headers
             if ($this->provider === 'openrouter') {
                 $headers['HTTP-Referer'] = config('app.url', 'http://localhost');
                 $headers['X-Title'] = config('app.name', 'TABDIL');
             }
 
-            // Construct URL - handle both OpenAI and OpenRouter Base URLs properly
-            // OpenRouter Base: https://openrouter.ai/api/v1
+            // Clean URL constructing
             $url = rtrim($this->baseUrl, '/') . '/chat/completions';
+
+            // Minimal payload to avoid errors with free models
+            $payload = [
+                'model' => $options['model'] ?? $this->model,
+                'messages' => $messages,
+            ];
+
+            // Only add max_tokens/temp if using standard OpenAI (OpenRouter free handles defaults better)
+            if ($this->provider !== 'openrouter') {
+                $payload['max_tokens'] = $options['max_tokens'] ?? $this->maxTokens;
+                $payload['temperature'] = $options['temperature'] ?? $this->temperature;
+            }
 
             $response = Http::withHeaders($headers)
                 ->timeout(60)
-                ->post($url, [
-                    'model' => $options['model'] ?? $this->model,
-                    'messages' => $messages,
-                    // REMOVED: max_tokens and temperature to prevent 500 errors on free models
-                ]);
+                ->post($url, $payload);
 
             $executionTime = round((microtime(true) - $startTime) * 1000);
 
             if ($response->successful()) {
                 $data = $response->json();
-                
-                // Handle different response structures gracefully
                 $output = $data['choices'][0]['message']['content'] ?? '';
                 
-                // If content is null (sometimes happens with tool calls), set empty
                 if (is_null($output)) $output = '';
 
                 $tokens = $data['usage']['total_tokens'] ?? 0;
@@ -198,20 +201,16 @@ class AiService
                 ];
             }
 
-            // Error Handling
             $errorData = $response->json();
-            $errorMessage = $errorData['error']['message'] ?? $response->body(); // Fallback to raw body
-            
-            Log::error('AI API Error: ' . $errorMessage);
+            $errorMessage = $errorData['error']['message'] ?? $response->body();
 
             return [
                 'success' => false,
                 'error' => 'Provider Error: ' . $errorMessage,
                 'execution_time' => $executionTime,
             ];
-
         } catch (\Exception $e) {
-            Log::error('AI Service Exception: ' . $e->getMessage());
+            Log::error('AI Service Error: ' . $e->getMessage());
             
             return [
                 'success' => false,
