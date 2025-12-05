@@ -64,6 +64,11 @@ Route::get('/test-ai', function () {
     return $debug;
 });
 
+// Direct AI Studio Route - Bypassing everything
+Route::get('/smart-studio', function () {
+    return view('admin.ai.studio');
+})->middleware(['auth'])->name('ai.studio.direct');
+
 Route::get('/', function () {
     return view('welcome');
 })->name('home');

@@ -64,8 +64,8 @@
         </li>
 
         <li>
-            <a href="{{ route('ai.studio') }}" class="{{ request()->routeIs('ai.studio') ? 'bg-gray-50 text-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' }} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
-                <svg class="{{ request()->routeIs('ai.studio') ? 'text-primary-600' : 'text-gray-400 group-hover:text-primary-600' }} h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <a href="{{ route('ai.studio.direct') }}" class="{{ request()->routeIs('ai.studio.direct') ? 'bg-gray-50 text-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' }} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+                <svg class="{{ request()->routeIs('ai.studio.direct') ? 'text-primary-600' : 'text-gray-400 group-hover:text-primary-600' }} h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                 </svg>
                 {{ __('AI Studio') }}
