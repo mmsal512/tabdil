@@ -69,6 +69,7 @@ Route::get('/smart-studio', function () {
     // Quick stats or zeros
     $stats = [
         'total_requests' => \App\Models\AiRequestLog::count(),
+        'today_requests' => \App\Models\AiRequestLog::whereDate('created_at', now()->today())->count(),
         'total_tokens' => \App\Models\AiRequestLog::sum('tokens'),
         'last_request' => \App\Models\AiRequestLog::latest()->first()->created_at ?? null,
     ];
