@@ -47,7 +47,10 @@ class AiService
      */
     public function chat(string $message, ?string $systemPrompt = null, array $options = []): array
     {
-        if ($this->provider === 'gemini') {
+        // Force check current provider from config, ignoring cached construct value
+        $currentProvider = config('ai.provider', 'openrouter');
+        
+        if ($currentProvider === 'gemini') {
             return $this->chatWithGemini($message, $systemPrompt, $options);
         }
         
