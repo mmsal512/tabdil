@@ -1,328 +1,242 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-        <a href="{{ route('currency.index') }}" class="text-sm text-gray-600 hover:text-gray-900">
-                ← {{ __('Currency Converter') }}
-            </a>
-            </div>
+        {{ __('Dashboard') }}
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if(session('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <span class="block sm:inline">{{ session('error') }}</span>
+    <!-- Flash Messages -->
+    @if (session('success'))
+        <div class="mb-6 rounded-md bg-green-50 p-4">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                    </svg>
                 </div>
-            @endif
-
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-medium text-gray-900">{{ __('Your Saved Conversions') }}</h3>
-                        <button 
-                            id="delete-selected-btn"
-                            onclick="submitBulkDelete()"
-                            class="hidden bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-xl transition-colors flex items-center shadow-md transform hover:scale-105">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                            {{ __('Delete Selected') }}
-                        </button>
-                    </div>
-
-                    @if(session('success'))
-                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                            <span class="block sm:inline">{{ session('success') }}</span>
-                        </div>
-                    @endif
-
-                    @if($favorites->isEmpty())
-                        <p class="text-gray-500">{{ __("You haven't saved any favorites yet.") }}</p>
-                        <a href="{{ route('currency.index') }}" class="text-indigo-600 hover:text-indigo-900 mt-2 inline-block">{{ __('Go to Converter') }}</a>
-                    @else
-                        <div class="overflow-hidden rounded-xl shadow-lg border-2 border-gray-100 overflow-x-auto">
-                            <table class="min-w-full">
-                                <thead class="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
-                                    <tr>
-                                        <th class="px-4 py-4 text-center">
-                                            <input type="checkbox" id="select-all" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 w-5 h-5">
-                                        </th>
-                                        <th class="px-8 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">{{ __('Label') }}</th>
-                                        <th class="px-8 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">{{ __('From') }}</th>
-                                        <th class="px-8 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">{{ __('To') }}</th>
-                                        <th class="px-8 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">{{ __('Amount') }}</th>
-                                        <th class="px-8 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">{{ __('Converted Amount') }}</th>
-                                        <th class="px-8 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">{{ __('Actions') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($favorites as $favorite)
-                                        <tr class="hover:bg-gray-50 transition-colors">
-                                            <td class="px-4 py-4 text-center">
-                                                <input type="checkbox" value="{{ $favorite->id }}" class="favorite-checkbox rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 w-5 h-5">
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-center font-medium text-gray-800">{{ $favorite->label ?: __('My Conversion') }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-center">{{ __($favorite->base_currency) }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-center">{{ __($favorite->target_currency) }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-center">{{ number_format($favorite->amount) }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-indigo-600">
-                                                @if($favorite->converted_amount)
-                                                    {{ number_format($favorite->converted_amount) }} {{ __($favorite->target_currency) }}
-                                                @else
-                                                    -
-                                                @endif
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                                <form id="delete-form-{{ $favorite->id }}" action="{{ route('favorites.destroy', $favorite) }}" method="POST" class="hidden">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
-                                                <button 
-                                                    type="button" 
-                                                    onclick="showDeleteModal({{ $favorite->id }}, '{{ $favorite->label ?: __('My Conversion') }}', '{{ __($favorite->base_currency) }}', '{{ __($favorite->target_currency) }}', '{{ number_format($favorite->amount) }}', '{{ $favorite->converted_amount ? number_format($favorite->converted_amount) : '-' }}')" 
-                                                    class="text-red-600 hover:text-red-900 font-semibold p-2 hover:bg-red-50 rounded-lg transition-colors">
-                                                    {{ __('Delete') }}
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @endif
+                <div class="mx-3">
+                    <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
                 </div>
             </div>
         </div>
+    @endif
+
+    @if (session('error'))
+        <div class="mb-6 rounded-md bg-red-50 p-4">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="mx-3">
+                    <p class="text-sm font-medium text-red-800">{{ session('error') }}</p>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-8">
+        <!-- Card 1: Quick Convert -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-4">
+                <div class="flex-shrink-0 rounded-lg bg-primary-500 p-3">
+                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-500">{{ __('Quick Convert') }}</p>
+                    <p class="text-xl font-bold text-gray-900">{{ __('Converter') }}</p>
+                </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100">
+                <a href="{{ route('currency.index') }}" class="text-sm font-medium text-primary-600 hover:text-primary-500">
+                    {{ __('Go to tool') }} &larr;
+                </a>
+            </div>
+        </div>
+
+        <!-- Card 2: Live Rates -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-4">
+                <div class="flex-shrink-0 rounded-lg bg-emerald-500 p-3">
+                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-500">{{ __('Live Rates') }}</p>
+                    <p class="text-xl font-bold text-gray-900">6 {{ __('Currencies') }}</p>
+                </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100">
+                <a href="{{ route('currency.index') }}" class="text-sm font-medium text-primary-600 hover:text-primary-500">
+                    {{ __('View rates') }} &larr;
+                </a>
+            </div>
+        </div>
+
+        @if(Auth::user()->user_type === 'admin')
+        <!-- Card 3: Admin Panel -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-4">
+                <div class="flex-shrink-0 rounded-lg bg-purple-500 p-3">
+                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" />
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-500">{{ __('Admin Panel') }}</p>
+                    <p class="text-xl font-bold text-gray-900">{{ __('Management') }}</p>
+                </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100">
+                <a href="{{ route('admin.dashboard') }}" class="text-sm font-medium text-primary-600 hover:text-primary-500">
+                    {{ __('Go to admin') }} &larr;
+                </a>
+            </div>
+        </div>
+        @endif
     </div>
 
-    <!-- Hidden Bulk Delete Form -->
-    <form id="bulk-delete-form" action="{{ route('favorites.destroyMany') }}" method="POST" class="hidden">
-        @csrf
-        @method('DELETE')
-    </form>
-
-    <!-- Individual Delete Confirmation Modal -->
-    <div id="delete-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full transform transition-all scale-95 modal-content">
-            <!-- Modal Header -->
-            <div class="bg-gradient-to-r from-red-600 to-pink-600 rounded-t-3xl p-6">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-2xl font-bold text-white flex items-center">
-                        <svg class="w-7 h-7 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                        </svg>
-                        {{ __('Confirm Delete') }}
-                    </h3>
-                    <button onclick="closeDeleteModal()" class="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
+    <!-- Favorites Section -->
+    <div class="bg-white shadow-sm rounded-xl border border-gray-100">
+        <div class="px-6 py-5 border-b border-gray-100">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-gray-900">{{ __('Your Saved Conversions') }}</h3>
+                @if(isset($favorites) && $favorites->count() > 0)
+                <form id="bulk-delete-form" action="{{ route('favorites.destroyMany') }}" method="POST" class="flex items-center gap-2">
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" name="ids" id="bulk-delete-ids">
+                    <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                        <input type="checkbox" id="select-all" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                        {{ __('Select All') }}
+                    </label>
+                    <button type="submit" id="bulk-delete-btn" class="hidden px-3 py-1.5 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">
+                        {{ __('Delete Selected') }} (<span id="selected-count">0</span>)
                     </button>
-                </div>
-            </div>
-            
-            <!-- Modal Body -->
-            <div class="p-6 space-y-6">
-                <p class="text-gray-700 text-lg text-center font-medium">
-                    {{ __('Are you sure you want to delete this favorite?') }}
-                </p>
-
-                <!-- Favorite Details Card -->
-                <div class="bg-gradient-to-br from-gray-50 to-red-50 rounded-2xl p-5 border-2 border-red-100">
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600 font-medium">{{ __('Label') }}:</span>
-                            <span class="text-gray-900 font-bold" id="modal-delete-label">-</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600 font-medium">{{ __('From') }}:</span>
-                            <span class="text-gray-900 font-bold" id="modal-delete-from">-</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600 font-medium">{{ __('To') }}:</span>
-                            <span class="text-gray-900 font-bold" id="modal-delete-to">-</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600 font-medium">{{ __('Amount') }}:</span>
-                            <span class="text-gray-900 font-bold" id="modal-delete-amount">-</span>
-                        </div>
-                        <div class="h-px bg-red-200 my-2"></div>
-                        <div class="flex justify-between items-center bg-white rounded-xl p-3">
-                            <span class="text-red-600 font-semibold">{{ __('Converted Amount') }}:</span>
-                            <span class="text-red-600 font-bold text-xl" id="modal-delete-converted">-</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Modal Footer -->
-            <div class="px-6 pb-6 flex gap-3">
-                <button 
-                    onclick="closeDeleteModal()" 
-                    class="flex-1 px-6 py-3 rounded-xl border-2 border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition-all transform hover:scale-105">
-                    {{ __('Cancel') }}
-                </button>
-                <button 
-                    onclick="submitDelete()" 
-                    class="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-red-600 to-pink-600 text-white font-semibold hover:from-red-700 hover:to-pink-700 transition-all transform hover:scale-105 shadow-lg">
-                    {{ __('Delete') }}
-                </button>
+                </form>
+                @endif
             </div>
         </div>
-    </div>
-
-    <!-- Bulk Delete Confirmation Modal -->
-    <div id="bulk-delete-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full transform transition-all scale-95 modal-content">
-            <div class="bg-gradient-to-r from-red-600 to-pink-600 rounded-t-3xl p-6">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-2xl font-bold text-white flex items-center">
-                        <svg class="w-7 h-7 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                        </svg>
-                        {{ __('Confirm Delete') }}
-                    </h3>
-                    <button onclick="closeBulkDeleteModal()" class="text-white/80 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div class="p-6 space-y-6">
-                <p class="text-gray-700 text-lg text-center font-medium">
-                    {{ __('Are you sure you want to delete the selected favorites?') }}
-                </p>
-                <p class="text-gray-500 text-center text-sm">
-                    <span id="selected-count" class="font-bold text-gray-900">0</span> {{ __('selected') }}
-                </p>
-            </div>
-            <div class="px-6 pb-6 flex gap-3">
-                <button onclick="closeBulkDeleteModal()" class="flex-1 px-6 py-3 rounded-xl border-2 border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition-all transform hover:scale-105">
-                    {{ __('Cancel') }}
-                </button>
-                <button onclick="confirmBulkDelete()" class="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-red-600 to-pink-600 text-white font-semibold hover:from-red-700 hover:to-pink-700 transition-all transform hover:scale-105 shadow-lg">
-                    {{ __('Delete Selected') }}
-                </button>
+        
+        @if(isset($favorites) && $favorites->count() > 0)
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider w-10">
+                            <span class="sr-only">{{ __('Select') }}</span>
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Label') }}</th>
+                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('From') }}</th>
+                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('To') }}</th>
+                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Date') }}</th>
+                        <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach($favorites as $favorite)
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="checkbox" class="favorite-checkbox rounded border-gray-300 text-primary-600 focus:ring-primary-500" value="{{ $favorite->id }}">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm font-medium text-gray-900">{{ $favorite->label ?? __('My Conversion') }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm text-gray-900">{{ number_format($favorite->amount, 0) }}</span>
+                            <span class="text-sm text-gray-500">{{ __($favorite->base_currency) }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm font-semibold text-primary-600">{{ number_format($favorite->converted_amount, 0) }}</span>
+                            <span class="text-sm text-gray-500">{{ __($favorite->target_currency) }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ $favorite->created_at->format('Y-m-d') }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                            <form action="{{ route('favorites.destroy', $favorite) }}" method="POST" class="inline delete-form">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="px-3 py-1.5 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-md transition-colors">{{ __('Delete') }}</button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @else
+        <div class="px-6 py-12 text-center">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __("You haven't saved any favorites yet.") }}</h3>
+            <p class="mt-1 text-sm text-gray-500">{{ __('Save conversions from the currency converter to access them quickly here.') }}</p>
+            <div class="mt-6">
+                <a href="{{ route('currency.index') }}" class="inline-flex items-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500">
+                    {{ __('Go to Converter') }}
+                </a>
             </div>
         </div>
+        @endif
     </div>
 
     @push('scripts')
     <script>
-        let currentDeleteFormId = null;
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectAllCheckbox = document.getElementById('select-all');
+            const favoriteCheckboxes = document.querySelectorAll('.favorite-checkbox');
+            const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+            const selectedCountSpan = document.getElementById('selected-count');
+            const bulkDeleteIdsInput = document.getElementById('bulk-delete-ids');
+            const bulkDeleteForm = document.getElementById('bulk-delete-form');
 
-        function showDeleteModal(favoriteId, label, from, to, amount, converted) {
-            currentDeleteFormId = favoriteId;
-            
-            // Populate modal with favorite details
-            document.getElementById('modal-delete-label').textContent = label || '-';
-            document.getElementById('modal-delete-from').textContent = from;
-            document.getElementById('modal-delete-to').textContent = to;
-            document.getElementById('modal-delete-amount').textContent = amount;
-            document.getElementById('modal-delete-converted').textContent = converted;
-            
-            // Show modal
-            const modal = document.getElementById('delete-modal');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.querySelector('.modal-content').classList.remove('scale-95');
-                modal.querySelector('.modal-content').classList.add('scale-100');
-            }, 10);
-        }
-        
-        function closeDeleteModal() {
-            const modal = document.getElementById('delete-modal');
-            modal.querySelector('.modal-content').classList.remove('scale-100');
-            modal.querySelector('.modal-content').classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 150);
-        }
-        
-        function submitDelete() {
-            if (currentDeleteFormId) {
-                document.getElementById('delete-form-' + currentDeleteFormId).submit();
+            if (!selectAllCheckbox) return;
+
+            function updateBulkDeleteBtn() {
+                const checkedBoxes = document.querySelectorAll('.favorite-checkbox:checked');
+                const count = checkedBoxes.length;
+                
+                if (count > 0) {
+                    bulkDeleteBtn.classList.remove('hidden');
+                    selectedCountSpan.textContent = count;
+                    
+                    const ids = Array.from(checkedBoxes).map(cb => cb.value);
+                    bulkDeleteIdsInput.value = JSON.stringify(ids);
+                } else {
+                    bulkDeleteBtn.classList.add('hidden');
+                }
             }
-        }
 
-        // Bulk Delete Scripts
-        const selectAllCheckbox = document.getElementById('select-all');
-        const favoriteCheckboxes = document.querySelectorAll('.favorite-checkbox');
-        const deleteSelectedBtn = document.getElementById('delete-selected-btn');
-        const selectedCountSpan = document.getElementById('selected-count');
-
-        function updateDeleteButton() {
-            const checkedCount = document.querySelectorAll('.favorite-checkbox:checked').length;
-            if (checkedCount > 0) {
-                deleteSelectedBtn.classList.remove('hidden');
-                if (selectedCountSpan) selectedCountSpan.textContent = checkedCount;
-            } else {
-                deleteSelectedBtn.classList.add('hidden');
-            }
-        }
-
-        if (selectAllCheckbox) {
             selectAllCheckbox.addEventListener('change', function() {
                 favoriteCheckboxes.forEach(cb => cb.checked = this.checked);
-                updateDeleteButton();
+                updateBulkDeleteBtn();
             });
-        }
 
-        favoriteCheckboxes.forEach(cb => {
-            cb.addEventListener('change', function() {
-                updateDeleteButton();
-                if (!this.checked) {
-                    selectAllCheckbox.checked = false;
-                } else if (document.querySelectorAll('.favorite-checkbox:checked').length === favoriteCheckboxes.length) {
-                    selectAllCheckbox.checked = true;
-                }
+            favoriteCheckboxes.forEach(cb => {
+                cb.addEventListener('change', updateBulkDeleteBtn);
+            });
+
+            if (bulkDeleteForm) {
+                bulkDeleteForm.addEventListener('submit', function(e) {
+                    if (!confirm('{{ __("Are you sure you want to delete the selected favorites?") }}')) {
+                        e.preventDefault();
+                    }
+                });
+            }
+
+            // Individual delete confirmation
+            document.querySelectorAll('.delete-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    if (!confirm('{{ __("Are you sure?") }}')) {
+                        e.preventDefault();
+                    }
+                });
             });
         });
-
-        function submitBulkDelete() {
-            const checkedCount = document.querySelectorAll('.favorite-checkbox:checked').length;
-            if (checkedCount === 0) return;
-
-            if (selectedCountSpan) selectedCountSpan.textContent = checkedCount;
-
-            const modal = document.getElementById('bulk-delete-modal');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.querySelector('.modal-content').classList.remove('scale-95');
-                modal.querySelector('.modal-content').classList.add('scale-100');
-            }, 10);
-        }
-
-        function closeBulkDeleteModal() {
-            const modal = document.getElementById('bulk-delete-modal');
-            modal.querySelector('.modal-content').classList.remove('scale-100');
-            modal.querySelector('.modal-content').classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 150);
-        }
-
-        function confirmBulkDelete() {
-            const form = document.getElementById('bulk-delete-form');
-            // Clear previous inputs
-            const existingInputs = form.querySelectorAll('input[name="ids[]"]');
-            existingInputs.forEach(input => input.remove());
-
-            // Add selected IDs
-            document.querySelectorAll('.favorite-checkbox:checked').forEach(cb => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'ids[]';
-                input.value = cb.value;
-                form.appendChild(input);
-            });
-
-            form.submit();
-        }
     </script>
     @endpush
 </x-app-layout>

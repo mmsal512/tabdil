@@ -19,7 +19,11 @@ Route::get('/locale/{locale}', function ($locale) {
     return redirect()->back();
 })->name('locale.switch');
 
-Route::get('/', [CurrencyController::class, 'index'])->name('currency.index');
+Route::get('/', function () {
+    return view('welcome');
+})->name('home');
+
+Route::get('/converter', [CurrencyController::class, 'index'])->name('currency.index');
 Route::post('/convert', [CurrencyController::class, 'convert'])->name('currency.convert');
 Route::get('/convert', function () {
     return redirect()->route('currency.index');
@@ -35,14 +39,6 @@ Route::get('/auth/favorites', function () {
 Route::get('/rates', function () {
     return redirect()->route('currency.index');
 });
-
-// History endpoint - used by AJAX, redirect if accessed directly
-Route::get('/history', function () {
-    if (!request()->ajax() && !request()->wantsJson()) {
-        return redirect()->route('currency.index')->with('error', 'Historical data is available on the currency converter page.');
-    }
-    return app(CurrencyController::class)->getHistory(request());
-})->name('currency.history');
 
 Route::get('/comparison', [CurrencyController::class, 'getComparisonRates'])->name('currency.comparison');
 

@@ -1,121 +1,59 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Backup Exchange Rates') }}
-            </h2>
-            <a href="{{ route('admin.dashboard') }}" class="text-sm text-gray-600 hover:text-gray-900">
-                ← {{ __('Back to Dashboard') }}
-            </a>
-        </div>
+        {{ __('Backup Exchange Rates') }}
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            
-            @if (session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
+    <div class="space-y-6">
+        @if (session('success'))
+            <div class="rounded-md bg-green-50 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
+                    </div>
                 </div>
-            @endif
+            </div>
+        @endif
 
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-                        {{ __('These rates will be used') }}
-                    </p>
-                    <p class="mb-6 text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {{ __('Base currency is YER.') }}
-                    </p>
+        <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+            <div class="px-4 py-6 sm:p-8">
+                <div class="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-3">
+                    <div class="px-4 sm:px-0">
+                        <h2 class="text-base font-semibold leading-7 text-gray-900">{{ __('Manual Rates') }}</h2>
+                        <p class="mt-1 text-sm leading-6 text-gray-600">{{ __('Set manual exchange rates to be used when the API is unavailable.') }}</p>
+                    </div>
 
-                    <form method="POST" action="{{ route('admin.backup-rates.update') }}">
+                    <form method="POST" action="{{ route('admin.backup-rates.update') }}" class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
                         @csrf
-
-                        <!-- Desktop Table -->
-                        <div class="hidden md:block overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                <thead class="bg-gray-50 dark:bg-gray-700">
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            {{ __('Currency') }}
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            {{ __('Buy Rate') }}
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            {{ __('Sell Rate') }}
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    @foreach(['SAR', 'USD', 'OMR', 'AED', 'KWD'] as $currency)
-                                        <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100 text-center">
-                                                {{ $currency }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <input type="number" 
-                                                       step="0.01" 
-                                                       name="buy_rates[{{ $currency }}]" 
-                                                       id="buy_rate_{{ $currency }}"
-                                                       value="{{ $buyRates[$currency] ?? 0 }}"
-                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-900 dark:border-gray-600 dark:text-gray-300 sm:text-sm text-center">
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <input type="number" 
-                                                       step="0.01" 
-                                                       name="sell_rates[{{ $currency }}]" 
-                                                       id="sell_rate_{{ $currency }}"
-                                                       value="{{ $sellRates[$currency] ?? 0 }}"
-                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-900 dark:border-gray-600 dark:text-gray-300 sm:text-sm text-center">
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Mobile Cards -->
-                        <div class="md:hidden space-y-6">
-                            @foreach(['SAR', 'USD', 'OMR', 'AED', 'KWD'] as $currency)
-                                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-600">
-                                    <div class="flex items-center justify-between mb-4 border-b border-gray-200 dark:border-gray-600 pb-2">
-                                        <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ $currency }}</h3>
-                                    </div>
-                                    
-                                    <div class="space-y-4">
+                        <div class="px-4 py-6 sm:p-8">
+                            <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                @foreach(['SAR', 'USD', 'OMR', 'AED', 'KWD'] as $currency)
+                                <div class="sm:col-span-6">
+                                    <h3 class="text-sm font-medium leading-6 text-gray-900 border-b border-gray-200 pb-2 mb-4">{{ $currency }}</h3>
+                                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                         <div>
-                                            <label for="mobile_buy_rate_{{ $currency }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                {{ __('Buy Rate') }}
-                                            </label>
-                                            <input type="number" 
-                                                   step="0.01" 
-                                                   name="buy_rates[{{ $currency }}]" 
-                                                   id="mobile_buy_rate_{{ $currency }}"
-                                                   value="{{ $buyRates[$currency] ?? 0 }}"
-                                                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-900 dark:border-gray-600 dark:text-gray-300 sm:text-sm">
+                                            <label for="buy_rates_{{ $currency }}" class="block text-sm font-medium leading-6 text-gray-900">{{ __('Buy Rate') }}</label>
+                                            <div class="mt-2">
+                                                <input type="number" step="0.0001" name="buy_rates[{{ $currency }}]" id="buy_rates_{{ $currency }}" value="{{ $buyRates[$currency] ?? 0 }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+                                            </div>
                                         </div>
-                                        
                                         <div>
-                                            <label for="mobile_sell_rate_{{ $currency }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                {{ __('Sell Rate') }}
-                                            </label>
-                                            <input type="number" 
-                                                   step="0.01" 
-                                                   name="sell_rates[{{ $currency }}]" 
-                                                   id="mobile_sell_rate_{{ $currency }}"
-                                                   value="{{ $sellRates[$currency] ?? 0 }}"
-                                                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-900 dark:border-gray-600 dark:text-gray-300 sm:text-sm">
+                                            <label for="sell_rates_{{ $currency }}" class="block text-sm font-medium leading-6 text-gray-900">{{ __('Sell Rate') }}</label>
+                                            <div class="mt-2">
+                                                <input type="number" step="0.0001" name="sell_rates[{{ $currency }}]" id="sell_rates_{{ $currency }}" value="{{ $sellRates[$currency] ?? 0 }}" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            @endforeach
+                                @endforeach
+                            </div>
                         </div>
-
-                        <div class="mt-6 flex items-center gap-4">
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                {{ __('Save Backup Rates') }}
-                            </button>
+                        <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+                            <button type="submit" class="rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">{{ __('Update Rates') }}</button>
                         </div>
                     </form>
                 </div>
