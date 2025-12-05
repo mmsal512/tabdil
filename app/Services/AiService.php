@@ -119,17 +119,20 @@ class AiService
             }
 
             $errorData = $response->json();
+            // Log real error for admin
+            Log::error('Gemini Provider Error: ' . ($errorData['error']['message'] ?? 'Unknown error'));
+
             return [
                 'success' => false,
-                'error' => $errorData['error']['message'] ?? 'Unknown error from Gemini API',
+                'error' => 'عذراً، هذا الموديل غير متاح حالياً أو يوجد خطأ في الإعدادات. يرجى التواصل مع الإدارة.',
                 'execution_time' => $executionTime,
             ];
         } catch (\Exception $e) {
-            Log::error('Gemini AI Service Error: ' . $e->getMessage());
+            Log::error('Gemini Service Error: ' . $e->getMessage());
             
             return [
                 'success' => false,
-                'error' => $e->getMessage(),
+                'error' => 'عذراً، حدث خطأ غير متوقع أثناء الاتصال بخدمة الذكاء الاصطناعي.',
                 'execution_time' => round((microtime(true) - $startTime) * 1000),
             ];
         }
