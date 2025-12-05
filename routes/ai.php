@@ -12,7 +12,8 @@ use App\Http\Controllers\Api\AiApiController;
 
 // Admin AI Pages
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/ai-studio', [AiController::class, 'studio'])->name('ai.studio');
+    // Renamed route to bypass strict caching
+    Route::get('/studio-ai', [AiController::class, 'studio'])->name('ai.studio');
     Route::get('/content-writer', [AiController::class, 'contentWriter'])->name('ai.content-writer');
     Route::get('/ai-logs', [AiController::class, 'logs'])->name('ai.logs');
 });

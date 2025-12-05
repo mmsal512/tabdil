@@ -172,8 +172,7 @@ class AiService
                 ->post($url, [
                     'model' => $options['model'] ?? $this->model,
                     'messages' => $messages,
-                    // Remove max_tokens/temperature if not set, let API decide defaults to avoid conflicts
-                    // 'max_tokens' => ...
+                    // REMOVED: max_tokens and temperature to prevent 500 errors on free models
                 ]);
 
             $executionTime = round((microtime(true) - $startTime) * 1000);
