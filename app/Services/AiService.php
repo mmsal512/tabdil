@@ -213,19 +213,21 @@ class AiService
             }
 
             $errorData = $response->json();
-            $errorMessage = $errorData['error']['message'] ?? $response->body();
+            // Log the real error internally for admin to see
+            Log::error('AI Provider Error: ' . ($errorData['error']['message'] ?? $response->body()));
 
             return [
                 'success' => false,
-                'error' => 'Provider Error (' . $response->status() . '): ' . $errorMessage,
+                'error' => 'عذراً، الخدمة مشغولة حالياً أو تواجه صعوبة في الاتصال. حاول مرة أخرى لاحقاً.',
                 'execution_time' => $executionTime,
             ];
         } catch (\Exception $e) {
-            Log::error('AI Service Error: ' . $e->getMessage());
+            // Log the exception securely
+            Log::error('AI Service Connection Error: ' . $e->getMessage());
             
             return [
                 'success' => false,
-                'error' => $e->getMessage(),
+                'error' => 'عذراً، حدث خطأ في الاتصال بالخادم. يرجى التحقق من اتصالك والمحاولة مجدداً.',
                 'execution_time' => round((microtime(true) - $startTime) * 1000),
             ];
         }
