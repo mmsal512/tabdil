@@ -145,6 +145,8 @@ class AiService
             $messages = [];
             
             if ($systemPrompt) {
+                // For OpenRouter/Gemini model compatibility, sometimes 'system' role is needed, 
+                // but some models prefer it in 'user' prompt. We'll stick to 'system' first.
                 $messages[] = ['role' => 'system', 'content' => $systemPrompt];
             }
             
@@ -155,26 +157,36 @@ class AiService
                 'Content-Type' => 'application/json',
             ];
 
-            // Add OpenRouter specific headers
+            // Add OpenRouter specific headers - This logic was proven working in /test-ai
             if ($this->provider === 'openrouter') {
                 $headers['HTTP-Referer'] = config('app.url', 'http://localhost');
                 $headers['X-Title'] = config('app.name', 'TABDIL');
             }
 
+            // Construct URL - handle both OpenAI and OpenRouter Base URLs properly
+            // OpenRouter Base: https://openrouter.ai/api/v1
+            $url = rtrim($this->baseUrl, '/') . '/chat/completions';
+
             $response = Http::withHeaders($headers)
                 ->timeout(60)
-                ->post($this->baseUrl . '/chat/completions', [
+                ->post($url, [
                     'model' => $options['model'] ?? $this->model,
                     'messages' => $messages,
-                    'max_tokens' => $options['max_tokens'] ?? $this->maxTokens,
-                    'temperature' => $options['temperature'] ?? $this->temperature,
+                    // Remove max_tokens/temperature if not set, let API decide defaults to avoid conflicts
+                    // 'max_tokens' => ...
                 ]);
 
             $executionTime = round((microtime(true) - $startTime) * 1000);
 
             if ($response->successful()) {
                 $data = $response->json();
+                
+                // Handle different response structures gracefully
                 $output = $data['choices'][0]['message']['content'] ?? '';
+                
+                // If content is null (sometimes happens with tool calls), set empty
+                if (is_null($output)) $output = '';
+
                 $tokens = $data['usage']['total_tokens'] ?? 0;
 
                 $this->logRequest($message, $output, $tokens);
@@ -187,14 +199,20 @@ class AiService
                 ];
             }
 
+            // Error Handling
             $errorData = $response->json();
+            $errorMessage = $errorData['error']['message'] ?? $response->body(); // Fallback to raw body
+            
+            Log::error('AI API Error: ' . $errorMessage);
+
             return [
                 'success' => false,
-                'error' => $errorData['error']['message'] ?? 'Unknown error from API',
+                'error' => 'Provider Error: ' . $errorMessage,
                 'execution_time' => $executionTime,
             ];
+
         } catch (\Exception $e) {
-            Log::error('AI Service Error: ' . $e->getMessage());
+            Log::error('AI Service Exception: ' . $e->getMessage());
             
             return [
                 'success' => false,
