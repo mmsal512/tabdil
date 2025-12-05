@@ -61,10 +61,16 @@ class AiService
     protected function chatWithGemini(string $message, ?string $systemPrompt = null, array $options = []): array
     {
         $startTime = microtime(true);
+        
+        // Force fresh config reading
+        $apiKey = config('ai.gemini.api_key');
+        $baseUrl = config('ai.gemini.base_url', 'https://generativelanguage.googleapis.com/v1beta');
+        $model = config('ai.gemini.model', 'gemini-1.5-flash');
 
         try {
-            $model = $options['model'] ?? $this->model;
-            $url = "{$this->baseUrl}/models/{$model}:generateContent?key={$this->apiKey}";
+            // Allow override via options, otherwise use fresh config model
+            $modelToUse = $options['model'] ?? $model;
+            $url = "{$baseUrl}/models/{$modelToUse}:generateContent?key={$apiKey}";
 
             $contents = [];
             
@@ -75,7 +81,7 @@ class AiService
                 ];
                 $contents[] = [
                     'role' => 'model',
-                    'parts' => [['text' => 'Understood. I will follow these instructions.']]
+                    'parts' => [['text' => 'Understood.']]
                 ];
             }
             
@@ -87,8 +93,8 @@ class AiService
             $response = Http::timeout(60)->post($url, [
                 'contents' => $contents,
                 'generationConfig' => [
-                    'temperature' => $options['temperature'] ?? $this->temperature,
-                    'maxOutputTokens' => $options['max_tokens'] ?? $this->maxTokens,
+                    'temperature' => $options['temperature'] ?? (float) config('ai.gemini.temperature', 0.7),
+                    'maxOutputTokens' => $options['max_tokens'] ?? (int) config('ai.gemini.max_tokens', 2048),
                 ],
             ]);
 
