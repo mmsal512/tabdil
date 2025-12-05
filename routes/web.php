@@ -19,6 +19,14 @@ Route::get('/locale/{locale}', function ($locale) {
     return redirect()->back();
 })->name('locale.switch');
 
+Route::get('/fix-system', function () {
+    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+    \Illuminate\Support\Facades\Artisan::call('config:clear');
+    \Illuminate\Support\Facades\Artisan::call('route:clear');
+    \Illuminate\Support\Facades\Artisan::call('view:clear');
+    return 'System Optimized and Cache Cleared! Try accessing admin page now.';
+});
+
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
