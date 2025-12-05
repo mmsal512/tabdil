@@ -5,11 +5,12 @@
 </p>
 
 <p align="center">
-  <strong>Real-time currency conversion for regional and international currencies</strong>
+  <strong>Real-time currency conversion with AI-powered tools for regional and international currencies</strong>
 </p>
 
 <p align="center">
   <a href="#features">Features</a> •
+  <a href="#ai-features">AI Features</a> •
   <a href="#tech-stack">Tech Stack</a> •
   <a href="#installation">Installation</a> •
   <a href="#configuration">Configuration</a> •
@@ -21,7 +22,7 @@
 
 ## About TABDIL
 
-**TABDIL** (تبديل - Arabic for "exchange") is a modern, responsive currency converter platform that enables users to convert between six key regional and international currencies with real-time exchange rates.
+**TABDIL** (تبديل - Arabic for "exchange") is a modern, responsive currency converter platform that enables users to convert between six key regional and international currencies with real-time exchange rates. Now featuring **AI-powered tools** for content generation and intelligent assistance.
 
 ### Supported Currencies
 
@@ -62,6 +63,46 @@
 
 ---
 
+## AI Features
+
+### 🤖 AI-Powered Tools
+
+TABDIL now includes a comprehensive suite of AI tools powered by **OpenRouter** or **Google Gemini**:
+
+#### 💬 AI Chat Widget
+- **Floating Chat Button** - Available on all pages
+- **Real-time AI Responses** - Instant answers to user queries
+- **Arabic & English Support** - Bilingual AI assistant
+- **Secure Error Handling** - User-friendly error messages
+
+#### 🎨 AI Studio (`/smart-studio`)
+A dedicated dashboard for AI tools with usage statistics:
+
+| Tool | Description |
+|------|-------------|
+| 💬 **AI Chat** | Interactive conversation with AI |
+| 📝 **Summarizer** | Condense long texts into key points |
+| 🏷️ **Title Generator** | Create SEO-friendly titles and descriptions |
+| 🌐 **Translator** | Translate between Arabic and English |
+| 😊 **Sentiment Analysis** | Analyze text sentiment (positive/negative/neutral) |
+| ⚡ **Custom Prompt** | Run custom AI prompts with system instructions |
+
+#### ✍️ Content Writer (`/smart-writer`)
+Professional content generation tools:
+
+| Tool | Description |
+|------|-------------|
+| 📝 **Blog Generator** | Generate full blog posts by topic (300-1200 words) |
+| 🔍 **SEO Keywords** | Extract SEO keywords from content |
+| 🔄 **Content Rewriter** | Rewrite text in different styles (professional, casual, formal, creative) |
+
+### AI Statistics Dashboard
+- **Total Requests** - Track all AI API calls
+- **Today's Requests** - Daily usage monitoring
+- **Total Tokens** - Token consumption tracking
+
+---
+
 ## Tech Stack
 
 ### Backend
@@ -73,6 +114,7 @@
 - **Laravel Blade** - Templating engine
 - **TailwindCSS** - Utility-first CSS framework
 - **Turbo.js** - Instant page navigation
+- **Alpine.js** - Lightweight JavaScript framework
 - **Vanilla JavaScript** - Core interactivity
 
 ### Build Tools
@@ -81,6 +123,8 @@
 
 ### External Services
 - **exchangerate-api** - Real-time exchange rate provider
+- **OpenRouter** - AI model aggregator (supports 100+ models)
+- **Google Gemini** - Direct Google AI integration
 
 ---
 
@@ -165,13 +209,44 @@ INSERT INTO api_settings (key, value) VALUES ('api_enabled', 'true');
 
 Or use the admin panel after seeding an admin user.
 
-### Step 7: Seed Admin User (Optional)
+### Step 7: AI Configuration
+
+Configure AI in your `.env` file:
+
+```env
+# AI Provider: openrouter or gemini
+AI_PROVIDER=openrouter
+
+# Your API Key
+AI_API_KEY=sk-or-v1-xxxxx
+
+# Model to use
+AI_MODEL=amazon/nova-2-lite-v1:free
+```
+
+**Available Providers:**
+
+| Provider | API Key Format | Free Tier |
+|----------|---------------|-----------|
+| OpenRouter | `sk-or-v1-...` | 50 requests/day |
+| Google Gemini | `AIzaSy...` | 1500 requests/day |
+
+**Recommended Models:**
+
+| Provider | Model | Notes |
+|----------|-------|-------|
+| OpenRouter | `amazon/nova-2-lite-v1:free` | 1M context, free |
+| OpenRouter | `google/gemini-2.0-flash-exp:free` | Fast, free |
+| Gemini | `gemini-1.5-flash` | Stable, recommended |
+| Gemini | `gemini-2.0-flash-lite` | Newer, experimental |
+
+### Step 8: Seed Admin User (Optional)
 
 Create an admin account manually in the `users` table:
 
 ```sql
-INSERT INTO users (name, email, password, email_verified_at) 
-VALUES ('Admin', 'admin@tabdil.com', '$2y$12$[bcrypt-hash]', NOW());
+INSERT INTO users (name, email, password, user_type, email_verified_at) 
+VALUES ('Admin', 'admin@tabdil.com', '$2y$12$[bcrypt-hash]', 'admin', NOW());
 ```
 
 **Note:** Use Laravel Tinker to generate bcrypt hash:
@@ -195,6 +270,24 @@ Configure these settings through the admin panel (`/admin/api-settings`):
 | `api_key` | Your API key | `abc123...` |
 | `cache_duration` | Cache time in minutes | `60` |
 | `api_enabled` | Toggle API on/off | `true` or `false` |
+
+### AI Settings
+
+Configure AI via environment variables:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `AI_PROVIDER` | AI provider (openrouter/gemini) | `openrouter` |
+| `AI_API_KEY` | Provider API key | `sk-or-v1-...` |
+| `AI_MODEL` | Model identifier | `gemini-1.5-flash` |
+
+### Switching AI Providers
+
+To switch between providers without code changes:
+
+1. Update `.env` variables
+2. Clear cache: Visit `/fix-system` or run `php artisan optimize:clear`
+3. Test the chat widget
 
 ### Backup Rates
 
@@ -243,6 +336,14 @@ Default credentials (if you seeded):
 - Email: `admin@tabdil.com`
 - Password: `admin123`
 
+### AI Tools Access
+
+| Tool | Route | Description |
+|------|-------|-------------|
+| AI Studio | `/smart-studio` | Full AI dashboard |
+| Content Writer | `/smart-writer` | Blog & content tools |
+| AI Chat | Floating button | Available on all pages |
+
 ---
 
 ## Project Structure
@@ -253,33 +354,46 @@ change_currency/
 │   ├── Http/
 │   │   ├── Controllers/
 │   │   │   ├── AdminController.php
+│   │   │   ├── AiController.php          # AI admin pages
+│   │   │   ├── Api/
+│   │   │   │   └── AiApiController.php   # AI API endpoints
 │   │   │   ├── CurrencyController.php
 │   │   │   └── FavoriteController.php
 │   │   └── Middleware/
 │   ├── Models/
+│   │   ├── AiRequestLog.php              # AI usage tracking
 │   │   ├── BackupRate.php
 │   │   ├── ExchangeRate.php
 │   │   └── User.php
 │   └── Services/
+│       ├── AiService.php                 # Core AI service
 │       └── CurrencyConversionService.php
+├── config/
+│   └── ai.php                            # AI configuration
 ├── database/
 │   ├── migrations/
-│   │   └── ..._create_backup_rates_table.php
+│   │   ├── ..._create_backup_rates_table.php
+│   │   └── ..._create_ai_request_logs_table.php
 │   └── seeders/
-│       └── BackupRatesSeeder.php
 ├── public/
 ├── resources/
 │   ├── js/
 │   │   └── app.js
 │   ├── views/
 │   │   ├── admin/
+│   │   │   ├── ai/
+│   │   │   │   ├── studio.blade.php      # AI Studio
+│   │   │   │   └── content-writer.blade.php
 │   │   │   ├── api-settings.blade.php
 │   │   │   ├── backup-rates.blade.php
 │   │   │   └── dashboard.blade.php
+│   │   ├── components/
+│   │   │   └── ai-chat-widget.blade.php  # Floating chat
 │   │   ├── currency/
 │   │   └── layouts/
 ├── routes/
-│   └── web.php
+│   ├── web.php
+│   └── ai.php                            # AI routes
 ├── .env
 └── README.md
 ```
@@ -300,6 +414,15 @@ TABDIL uses a hybrid rate calculation system:
 2.  **Cross-Currency Conversions (e.g., USD → SAR):**
     *   Primary: Uses real-time rates from the external API.
     *   Fallback: Uses historical rates if API is unavailable.
+
+### AI Service Architecture
+
+The AI system is designed for flexibility and security:
+
+1. **Multi-Provider Support:** Switch between OpenRouter and Gemini without code changes
+2. **Fresh Config Reading:** Configuration is read on every request (no caching issues)
+3. **Secure Error Handling:** Raw API errors are logged, users see friendly messages
+4. **Usage Tracking:** All AI requests are logged with token counts
 
 ### Mobile Responsiveness
 
@@ -346,18 +469,6 @@ Edit language files in `resources/lang/`:
 
 ---
 
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
 ## Troubleshooting
 
 ### Common Issues
@@ -370,6 +481,21 @@ SQLSTATE[HY000] [2002] No connection could be made
 
 **API Rate Limit Exceeded:**
 **Solution:** System automatically switches to backup rates. Check `api_settings` table.
+
+**AI Rate Limit Exceeded (OpenRouter):**
+```
+Rate limit exceeded: free-models-per-day
+```
+**Solution:** Switch to Gemini provider (1500 free requests/day) or add credits to OpenRouter.
+
+**AI Model Not Found:**
+```
+models/gemini-3-pro is not found
+```
+**Solution:** Use a valid model name like `gemini-1.5-flash` or `gemini-2.0-flash-lite`.
+
+**AI Provider Switching Issues:**
+**Solution:** Visit `/fix-system` to clear all caches after changing providers.
 
 **Turbo Navigation Issues:**
 **Solution:** Clear browser cache and ensure `resources/js/app.js` is properly compiled.
@@ -385,6 +511,7 @@ SQLSTATE[HY000] [2002] No connection could be made
 
 - API responses cached based on `cache_duration` setting (default: 60 minutes)
 - Laravel cache used for sessions and application data
+- AI configuration read fresh on each request (no stale config issues)
 
 ### Asset Optimization
 
@@ -402,6 +529,8 @@ npm run build
 - CSRF protection on all forms
 - SQL injection prevention via Eloquent ORM
 - XSS protection via Blade templating
+- **AI API keys never exposed to users**
+- **Raw AI errors logged internally, not shown to users**
 
 ---
 
@@ -409,7 +538,8 @@ npm run build
 
 ### Recommended Hosting
 
-**Primary:** Laravel Cloud (planned)
+**Primary:** Laravel Cloud (currently deployed)
+- URL: `https://tabdil-main-qyrr9d.laravel.cloud`
 
 **Alternatives:**
 - VPS (DigitalOcean, Linode, AWS)
@@ -421,12 +551,25 @@ npm run build
 - [ ] Update `.env` with production database credentials
 - [ ] Set `APP_ENV=production`
 - [ ] Set `APP_DEBUG=false`
+- [ ] Configure AI environment variables
 - [ ] Run `php artisan config:cache`
 - [ ] Run `php artisan route:cache`
 - [ ] Run `npm run build`
 - [ ] Configure web server (Apache/Nginx)
 - [ ] Set up SSL certificate
 - [ ] Configure backup strategy
+
+---
+
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
 
@@ -443,7 +586,10 @@ This project is open-sourced software licensed under the [MIT license](https://o
 - [Laravel](https://laravel.com) - The PHP Framework
 - [TailwindCSS](https://tailwindcss.com) - CSS Framework
 - [Turbo](https://turbo.hotwired.dev) - Navigation Library
+- [Alpine.js](https://alpinejs.dev) - JavaScript Framework
 - [exchangerate-api](https://www.exchangerate-api.com) - Currency Data Provider
+- [OpenRouter](https://openrouter.ai) - AI Model Aggregator
+- [Google Gemini](https://ai.google.dev) - AI Models
 
 ### Author
 
@@ -459,9 +605,10 @@ For support, questions, or feature requests:
 
 ---
 
-**Made with ❤️ for currency conversion**
+**Made with ❤️ for currency conversion and AI-powered productivity**
 
 ---
 
-**Version:** 2.0  
-**Last Updated:** December 3, 2025
+**Version:** 3.0  
+**Last Updated:** December 6, 2025
+
