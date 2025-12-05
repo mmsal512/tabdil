@@ -77,6 +77,11 @@ Route::get('/smart-studio', function () {
     return view('admin.ai.studio', compact('stats'));
 })->middleware(['auth'])->name('ai.studio.direct');
 
+// Direct Content Writer Route
+Route::get('/smart-writer', function () {
+    return view('admin.ai.content-writer');
+})->middleware(['auth'])->name('ai.writer.direct');
+
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
