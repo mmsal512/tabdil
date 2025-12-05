@@ -66,7 +66,14 @@ Route::get('/test-ai', function () {
 
 // Direct AI Studio Route - Bypassing everything
 Route::get('/smart-studio', function () {
-    return view('admin.ai.studio');
+    // Quick stats or zeros
+    $stats = [
+        'total_requests' => \App\Models\AiRequestLog::count(),
+        'total_tokens' => \App\Models\AiRequestLog::sum('tokens'),
+        'last_request' => \App\Models\AiRequestLog::latest()->first()->created_at ?? null,
+    ];
+    
+    return view('admin.ai.studio', compact('stats'));
 })->middleware(['auth'])->name('ai.studio.direct');
 
 Route::get('/', function () {

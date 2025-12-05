@@ -141,6 +141,19 @@ class AiService
     protected function chatWithOpenAI(string $message, ?string $systemPrompt = null, array $options = []): array
     {
         $startTime = microtime(true);
+        
+        // Force Fresh Config Reading (Fix for Laravel Cloud Caching)
+        $isOpenRouter = (config('ai.provider') === 'openrouter');
+        
+        if ($isOpenRouter) {
+            $apiKey = config('ai.openrouter.api_key');
+            $baseUrl = config('ai.openrouter.base_url', 'https://openrouter.ai/api/v1');
+            $model = config('ai.openrouter.model', 'google/gemini-2.0-flash-exp:free');
+        } else {
+            $apiKey = config('ai.openai.api_key');
+            $baseUrl = config('ai.openai.base_url');
+            $model = config('ai.openai.model');
+        }
 
         try {
             $messages = [];
@@ -152,29 +165,27 @@ class AiService
             $messages[] = ['role' => 'user', 'content' => $message];
 
             $headers = [
-                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Authorization' => 'Bearer ' . $apiKey,
                 'Content-Type' => 'application/json',
             ];
 
             // Add OpenRouter specific headers
-            if ($this->provider === 'openrouter') {
+            if ($isOpenRouter) {
                 $headers['HTTP-Referer'] = config('app.url', 'http://localhost');
                 $headers['X-Title'] = config('app.name', 'TABDIL');
             }
 
-            // Clean URL constructing
-            $url = rtrim($this->baseUrl, '/') . '/chat/completions';
+            // Url Construction
+            $url = rtrim($baseUrl, '/') . '/chat/completions';
 
-            // Minimal payload to avoid errors with free models
             $payload = [
-                'model' => $options['model'] ?? $this->model,
+                'model' => $options['model'] ?? $model,
                 'messages' => $messages,
             ];
 
-            // Only add max_tokens/temp if using standard OpenAI (OpenRouter free handles defaults better)
-            if ($this->provider !== 'openrouter') {
-                $payload['max_tokens'] = $options['max_tokens'] ?? $this->maxTokens;
-                $payload['temperature'] = $options['temperature'] ?? $this->temperature;
+            // Add params only if NOT using OpenRouter Free (to avoid errors)
+            if (!$isOpenRouter) {
+                 $payload['max_tokens'] = $options['max_tokens'] ?? 2048;
             }
 
             $response = Http::withHeaders($headers)
@@ -206,7 +217,7 @@ class AiService
 
             return [
                 'success' => false,
-                'error' => 'Provider Error: ' . $errorMessage,
+                'error' => 'Provider Error (' . $response->status() . '): ' . $errorMessage,
                 'execution_time' => $executionTime,
             ];
         } catch (\Exception $e) {
