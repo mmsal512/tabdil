@@ -20,8 +20,11 @@ class AdminMiddleware
         }
 
         // Check if user is admin (case insensitive and trimmed)
-        if (trim(strtolower($request->user()->user_type)) !== 'admin') {
-            return redirect()->route('dashboard')->with('error', 'You do not have permission to access this area.');
+        $userType = trim(strtolower($request->user()->user_type));
+        
+        if ($userType !== 'admin') {
+            // Debug info in flash message
+            return redirect()->route('dashboard')->with('error', 'Access Denied. Found user_type: [' . $userType . ']');
         }
 
         return $next($request);

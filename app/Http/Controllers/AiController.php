@@ -9,7 +9,7 @@ class AiController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'admin']);
+        // Middleware is handled in routes/ai.php
     }
 
     /**
