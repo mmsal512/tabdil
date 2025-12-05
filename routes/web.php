@@ -28,7 +28,14 @@ Route::get('/fix-system', function () {
 });
 
 Route::get('/test-ai', function () {
+    $debug = [
+        'config_default' => config('ai.default'),
+        'config_key_masked' => substr(config('ai.openrouter.api_key'), 0, 10) . '...',
+        'service_check' => [],
+    ];
+
     try {
+        // Direct API Check
         $apiKey = config('ai.openrouter.api_key');
         $model = config('ai.openrouter.model');
         
@@ -42,15 +49,19 @@ Route::get('/test-ai', function () {
             'messages' => [['role' => 'user', 'content' => 'Hello']],
         ]);
 
-        return [
-            'status' => $response->status(),
-            'body' => $response->json(),
-            'config_key' => substr($apiKey, 0, 10) . '...',
-            'config_model' => $model,
-        ];
+        $debug['direct_api_status'] = $response->status();
+        $debug['direct_api_body'] = $response->json();
+
+        // AiService Class Check
+        $service = new \App\Services\AiService();
+        $debug['service_response'] = $service->chat('Hello from Service');
+
     } catch (\Exception $e) {
-        return ['error' => $e->getMessage()];
+        $debug['error'] = $e->getMessage();
+        $debug['trace'] = $e->getTraceAsString();
     }
+
+    return $debug;
 });
 
 Route::get('/', function () {
