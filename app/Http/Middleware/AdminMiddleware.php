@@ -19,7 +19,8 @@ class AdminMiddleware
             return redirect()->route('login')->with('error', 'Please login to access this area.');
         }
 
-        if ($request->user()->user_type !== 'admin') {
+        // Check if user is admin (case insensitive and trimmed)
+        if (trim(strtolower($request->user()->user_type)) !== 'admin') {
             return redirect()->route('dashboard')->with('error', 'You do not have permission to access this area.');
         }
 
