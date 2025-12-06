@@ -272,61 +272,132 @@
             </div>
         </div>
 
-        <!-- Feature Section -->
-        <div id="features" class="bg-white py-24 sm:py-32">
-            <div class="mx-auto max-w-7xl px-6 lg:px-8">
-                <div class="mx-auto max-w-2xl lg:text-center">
-                    <h2 class="text-base font-semibold leading-7 text-primary-600">{{ __('Why Choose Us') }}</h2>
-                    <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{{ __('Everything you need for currency exchange') }}</p>
+        <!-- Feature Section - Modern Design -->
+        <div id="features" class="relative bg-gradient-to-b from-gray-50 to-white py-24 sm:py-32 overflow-hidden">
+            <!-- Background decorations -->
+            <div class="absolute inset-0 overflow-hidden">
+                <div class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-200 to-indigo-200 rounded-full opacity-30 blur-3xl"></div>
+                <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-blue-200 to-cyan-200 rounded-full opacity-30 blur-3xl"></div>
+            </div>
+            
+            <div class="relative mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="mx-auto max-w-2xl text-center">
+                    <div class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-100 to-indigo-100 px-4 py-1.5 text-sm font-semibold text-primary-700 mb-6">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                        </svg>
+                        {{ __('Why Choose Us') }}
+                    </div>
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">{{ __('Everything you need for currency exchange') }}</h2>
                     <p class="mt-6 text-lg leading-8 text-gray-600">{{ __('We provide the most accurate and up-to-date exchange rates for the region\'s most important currencies.') }}</p>
                 </div>
-                <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-                    <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
-                        <div class="relative pl-16">
-                            <dt class="text-base font-semibold leading-7 text-gray-900">
-                                <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600">
-                                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                
+                <div class="mx-auto mt-16 max-w-5xl">
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-8">
+                        
+                        <!-- Feature 1: Real-time Updates -->
+                        <a href="{{ route('currency.index') }}" class="feature-card group relative overflow-hidden rounded-3xl bg-white p-8 shadow-xl ring-1 ring-gray-100 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 block cursor-pointer">
+                            <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full -translate-y-1/2 translate-x-1/2 opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
+                            
+                            <div class="relative">
+                                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30 mb-6 group-hover:scale-110 transition-transform duration-300">
+                                    <svg class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </div>
-                                {{ __('Real-time Updates') }}
-                            </dt>
-                            <dd class="mt-2 text-base leading-7 text-gray-600">{{ __('Our rates are updated frequently to ensure you get the most accurate conversion possible.') }}</dd>
-                        </div>
-                        <div class="relative pl-16">
-                            <dt class="text-base font-semibold leading-7 text-gray-900">
-                                <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600">
-                                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">{{ __('Real-time Updates') }}</h3>
+                                <p class="text-gray-600 leading-relaxed">{{ __('Our rates are updated frequently to ensure you get the most accurate conversion possible.') }}</p>
+                                
+                                <div class="mt-6 flex items-center text-sm font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <span>{{ __('Learn more') }}</span>
+                                    <svg class="w-4 h-4 ml-1 rtl:mr-1 rtl:ml-0 transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- Feature 2: Multiple Currencies -->
+                        <a href="{{ route('currency.index') }}" class="feature-card group relative overflow-hidden rounded-3xl bg-white p-8 shadow-xl ring-1 ring-gray-100 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 block cursor-pointer">
+                            <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full -translate-y-1/2 translate-x-1/2 opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
+                            
+                            <div class="relative">
+                                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg shadow-purple-500/30 mb-6 group-hover:scale-110 transition-transform duration-300">
+                                    <svg class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                                     </svg>
                                 </div>
-                                {{ __('Multiple Currencies') }}
-                            </dt>
-                            <dd class="mt-2 text-base leading-7 text-gray-600">{{ __('Support for SAR, YER, OMR, USD, AED, and KWD with cross-rate calculations.') }}</dd>
-                        </div>
-                        <div class="relative pl-16">
-                            <dt class="text-base font-semibold leading-7 text-gray-900">
-                                <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600">
-                                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">{{ __('Multiple Currencies') }}</h3>
+                                <p class="text-gray-600 leading-relaxed">{{ __('Support for SAR, YER, OMR, USD, AED, and KWD with cross-rate calculations.') }}</p>
+                                
+                                <div class="mt-6 flex items-center text-sm font-semibold text-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <span>{{ __('Learn more') }}</span>
+                                    <svg class="w-4 h-4 ml-1 rtl:mr-1 rtl:ml-0 transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- Feature 3: Save Favorites -->
+                        <a href="{{ route('currency.index') }}" class="feature-card group relative overflow-hidden rounded-3xl bg-white p-8 shadow-xl ring-1 ring-gray-100 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 block cursor-pointer">
+                            <div class="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-rose-100 to-orange-100 rounded-full -translate-y-1/2 translate-x-1/2 opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
+                            
+                            <div class="relative">
+                                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-orange-500 shadow-lg shadow-rose-500/30 mb-6 group-hover:scale-110 transition-transform duration-300">
+                                    <svg class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                                     </svg>
                                 </div>
-                                {{ __('Save Favorites') }}
-                            </dt>
-                            <dd class="mt-2 text-base leading-7 text-gray-600">{{ __('Save your frequently used conversions for quick access anytime.') }}</dd>
-                        </div>
-                        <div class="relative pl-16">
-                            <dt class="text-base font-semibold leading-7 text-gray-900">
-                                <div class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600">
-                                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-rose-600 transition-colors">{{ __('Save Favorites') }}</h3>
+                                <p class="text-gray-600 leading-relaxed">{{ __('Save your frequently used conversions for quick access anytime.') }}</p>
+                                
+                                <div class="mt-6 flex items-center text-sm font-semibold text-rose-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <span>{{ __('Learn more') }}</span>
+                                    <svg class="w-4 h-4 ml-1 rtl:mr-1 rtl:ml-0 transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- Feature 4: Mobile Friendly -->
+                        <a href="{{ route('currency.index') }}" class="feature-card group relative overflow-hidden rounded-3xl bg-white p-8 shadow-xl ring-1 ring-gray-100 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 block cursor-pointer">
+                            <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-full -translate-y-1/2 translate-x-1/2 opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
+                            
+                            <div class="relative">
+                                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/30 mb-6 group-hover:scale-110 transition-transform duration-300">
+                                    <svg class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
                                     </svg>
                                 </div>
-                                {{ __('Mobile Friendly') }}
-                            </dt>
-                            <dd class="mt-2 text-base leading-7 text-gray-600">{{ __('Access our converter from any device, anywhere, anytime.') }}</dd>
-                        </div>
-                    </dl>
+                                <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-emerald-600 transition-colors">{{ __('Mobile Friendly') }}</h3>
+                                <p class="text-gray-600 leading-relaxed">{{ __('Access our converter from any device, anywhere, anytime.') }}</p>
+                                
+                                <div class="mt-6 flex items-center text-sm font-semibold text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <span>{{ __('Learn more') }}</span>
+                                    <svg class="w-4 h-4 ml-1 rtl:mr-1 rtl:ml-0 transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </a>
+                        
+                    </div>
+                    
+                    <!-- Bottom CTA -->
+                    <div class="mt-16 text-center">
+                        <a href="{{ route('currency.index') }}" class="inline-flex items-center gap-2 rounded-full bg-gray-900 px-8 py-4 text-sm font-semibold text-white shadow-lg hover:bg-gray-800 transition-all hover:scale-105">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {{ __('Start Converting Now') }}
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
