@@ -11,11 +11,69 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <style>
+        /* AI Gradient Animation */
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .ai-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #6B8DD6 50%, #8E37D7 75%, #667eea 100%);
+            background-size: 300% 300%;
+            animation: gradient-shift 6s ease infinite;
+        }
+        .ai-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .ai-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgba(102, 126, 234, 0.35);
+        }
+        .ai-icon-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .pulse-dot {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
 </head>
 <body class="font-sans antialiased text-gray-900 bg-white">
     <div class="bg-white">
+        
+        <!-- AI Announcement Banner -->
+        <div class="ai-gradient">
+            <div class="mx-auto max-w-7xl px-3 py-2 sm:px-6 lg:px-8">
+                <div class="flex flex-wrap items-center justify-between">
+                    <div class="flex w-full flex-1 items-center justify-center sm:justify-start">
+                        <span class="flex items-center gap-2 text-white text-sm font-medium">
+                            <span class="pulse-dot inline-block h-2 w-2 rounded-full bg-white"></span>
+                            <span class="hidden sm:inline">🤖 {{ __('NEW: AI-Powered Tools Now Available!') }}</span>
+                            <span class="sm:hidden">🤖 {{ __('AI Tools Available!') }}</span>
+                        </span>
+                    </div>
+                    <div class="order-3 mt-2 w-full flex-shrink-0 sm:order-2 sm:mt-0 sm:w-auto">
+                        <a href="{{ route('register') }}" class="flex items-center justify-center rounded-md bg-white px-3 py-1.5 text-sm font-semibold text-primary-600 shadow-sm hover:bg-gray-100 transition-all">
+                            {{ __('Register Free') }} →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Header -->
-        <header class="absolute inset-x-0 top-0 z-50">
+        <header class="absolute inset-x-0 top-10 z-50">
             <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
                 <div class="flex lg:flex-1">
                     <a href="{{ route('home') }}" class="-m-1.5 p-1.5 flex items-center gap-2">
@@ -32,9 +90,9 @@
                     </button>
                 </div>
                 <div class="hidden lg:flex lg:gap-x-12">
-                    <a href="{{ route('currency.index') }}" class="text-sm font-semibold leading-6 text-gray-900">{{ __('Converter') }}</a>
-                    <a href="{{ route('login') }}" class="text-sm font-semibold leading-6 text-gray-900">{{ __('Log in') }}</a>
-                    <a href="{{ route('register') }}" class="text-sm font-semibold leading-6 text-gray-900">{{ __('Register') }}</a>
+                    <a href="{{ route('currency.index') }}" class="text-sm font-semibold leading-6 text-gray-900 hover:text-primary-600 transition-colors">{{ __('Converter') }}</a>
+                    <a href="#ai-tools" class="text-sm font-semibold leading-6 text-gray-900 hover:text-primary-600 transition-colors">{{ __('AI Tools') }}</a>
+                    <a href="{{ route('login') }}" class="text-sm font-semibold leading-6 text-gray-900 hover:text-primary-600 transition-colors">{{ __('Log in') }}</a>
                 </div>
                 <div class="hidden lg:flex lg:flex-1 lg:justify-end gap-x-4 items-center">
                     <!-- Language Switcher -->
@@ -57,33 +115,160 @@
 
                     @auth
                         <a href="{{ route('currency.index') }}" class="text-sm font-semibold leading-6 text-gray-900">{{ __('Dashboard') }} <span aria-hidden="true">&rarr;</span></a>
+                    @else
+                        <a href="{{ route('register') }}" class="rounded-md ai-gradient px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 transition-all">{{ __('Register Free') }}</a>
                     @endauth
                 </div>
             </nav>
         </header>
 
         <!-- Hero Section -->
-        <div class="relative isolate px-6 pt-14 lg:px-8">
+        <div class="relative isolate px-6 pt-24 lg:px-8">
             <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
-                <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+                <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#667eea] to-[#764ba2] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
             </div>
-            <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+            <div class="mx-auto max-w-3xl py-32 sm:py-40 lg:py-48">
                 <div class="hidden sm:mb-8 sm:flex sm:justify-center">
-                    <div class="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
-                        {{ __('New: Real-time exchange rates available.') }} <a href="{{ route('currency.index') }}" class="font-semibold text-primary-600"><span class="absolute inset-0" aria-hidden="true"></span>{{ __('Try it now') }} <span aria-hidden="true">&rarr;</span></a>
+                    <div class="relative rounded-full px-4 py-1.5 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20 flex items-center gap-2">
+                        <span class="ai-icon-bg text-white px-2 py-0.5 rounded-full text-xs font-bold">AI</span>
+                        {{ __('AI-Powered Currency Conversion & Content Tools') }}
                     </div>
                 </div>
                 <div class="text-center">
-                    <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">{{ __('Fast & Reliable Currency Conversion') }}</h1>
-                    <p class="mt-6 text-lg leading-8 text-gray-600">{{ __('Convert between SAR, YER, OMR, USD, AED, and KWD instantly with our advanced currency tool. Get real-time rates and save your favorite conversions.') }}</p>
+                    <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+                        {{ __('Smart Currency Conversion') }}
+                        <span class="block bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent pb-2">{{ __('Powered by AI') }}</span>
+                    </h1>
+                    <p class="mt-6 text-lg leading-8 text-gray-600">{{ __('Convert currencies instantly with real-time rates. Plus, unlock AI-powered tools for content generation, translation, and more – all in one platform!') }}</p>
                     <div class="mt-10 flex items-center justify-center gap-x-6">
-                        <a href="{{ route('currency.index') }}" class="rounded-md bg-primary-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">{{ __('Start Converting') }}</a>
-                        <a href="#features" class="text-sm font-semibold leading-6 text-gray-900">{{ __('Learn more') }} <span aria-hidden="true">→</span></a>
+                        <a href="{{ route('register') }}" class="rounded-md ai-gradient px-6 py-3 text-sm font-semibold text-white shadow-lg hover:opacity-90 transition-all flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                            </svg>
+                            {{ __('Start Free with AI') }}
+                        </a>
+                        <a href="{{ route('currency.index') }}" class="text-sm font-semibold leading-6 text-gray-900 hover:text-primary-600 transition-colors">{{ __('Try Converter') }} <span aria-hidden="true">→</span></a>
                     </div>
                 </div>
             </div>
             <div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]" aria-hidden="true">
-                <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+                <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#667eea] to-[#764ba2] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+            </div>
+        </div>
+
+        <!-- AI Tools Section -->
+        <div id="ai-tools" class="bg-gradient-to-b from-white to-gray-50 py-24 sm:py-32">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+                <div class="mx-auto max-w-2xl text-center">
+                    <div class="inline-flex items-center gap-2 rounded-full ai-gradient px-4 py-1.5 text-sm font-semibold text-white mb-6">
+                        <span class="pulse-dot inline-block h-2 w-2 rounded-full bg-white"></span>
+                        {{ __('Exclusive AI Tools') }}
+                    </div>
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{{ __('Unlock the Power of AI') }}</h2>
+                    <p class="mt-4 text-lg leading-8 text-gray-600">{{ __('Register now to access our exclusive AI-powered tools – completely free!') }}</p>
+                </div>
+                
+                <!-- AI Tools Grid -->
+                <div class="mx-auto mt-16 max-w-6xl">
+                    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                        
+                        <!-- AI Chat -->
+                        <div class="ai-card relative overflow-hidden rounded-2xl bg-white p-8 shadow-lg ring-1 ring-gray-200">
+                            <div class="ai-icon-bg h-12 w-12 rounded-xl flex items-center justify-center mb-6 float-animation">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ __('AI Chat Assistant') }}</h3>
+                            <p class="text-gray-600 text-sm">{{ __('Get instant answers and assistance with our intelligent AI chatbot available 24/7.') }}</p>
+                            <div class="absolute top-4 right-4">
+                                <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{{ __('Free') }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Content Writer -->
+                        <div class="ai-card relative overflow-hidden rounded-2xl bg-white p-8 shadow-lg ring-1 ring-gray-200">
+                            <div class="ai-icon-bg h-12 w-12 rounded-xl flex items-center justify-center mb-6 float-animation" style="animation-delay: 0.5s;">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ __('Content Writer') }}</h3>
+                            <p class="text-gray-600 text-sm">{{ __('Generate professional blog posts, articles, and marketing content in seconds.') }}</p>
+                            <div class="absolute top-4 right-4">
+                                <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{{ __('Free') }}</span>
+                            </div>
+                        </div>
+
+                        <!-- SEO Keywords -->
+                        <div class="ai-card relative overflow-hidden rounded-2xl bg-white p-8 shadow-lg ring-1 ring-gray-200">
+                            <div class="ai-icon-bg h-12 w-12 rounded-xl flex items-center justify-center mb-6 float-animation" style="animation-delay: 1s;">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ __('SEO Keywords') }}</h3>
+                            <p class="text-gray-600 text-sm">{{ __('Extract powerful SEO keywords from your content to boost search rankings.') }}</p>
+                            <div class="absolute top-4 right-4">
+                                <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{{ __('Free') }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Translator -->
+                        <div class="ai-card relative overflow-hidden rounded-2xl bg-white p-8 shadow-lg ring-1 ring-gray-200">
+                            <div class="ai-icon-bg h-12 w-12 rounded-xl flex items-center justify-center mb-6 float-animation" style="animation-delay: 1.5s;">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ __('AI Translator') }}</h3>
+                            <p class="text-gray-600 text-sm">{{ __('Translate content between Arabic and English with natural, fluent results.') }}</p>
+                            <div class="absolute top-4 right-4">
+                                <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{{ __('Free') }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Text Summarizer -->
+                        <div class="ai-card relative overflow-hidden rounded-2xl bg-white p-8 shadow-lg ring-1 ring-gray-200">
+                            <div class="ai-icon-bg h-12 w-12 rounded-xl flex items-center justify-center mb-6 float-animation" style="animation-delay: 2s;">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ __('Text Summarizer') }}</h3>
+                            <p class="text-gray-600 text-sm">{{ __('Condense long articles and documents into clear, concise summaries.') }}</p>
+                            <div class="absolute top-4 right-4">
+                                <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{{ __('Free') }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Content Rewriter -->
+                        <div class="ai-card relative overflow-hidden rounded-2xl bg-white p-8 shadow-lg ring-1 ring-gray-200">
+                            <div class="ai-icon-bg h-12 w-12 rounded-xl flex items-center justify-center mb-6 float-animation" style="animation-delay: 2.5s;">
+                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ __('Content Rewriter') }}</h3>
+                            <p class="text-gray-600 text-sm">{{ __('Rewrite and improve your content with different tones and styles.') }}</p>
+                            <div class="absolute top-4 right-4">
+                                <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{{ __('Free') }}</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- CTA Button -->
+                <div class="mt-16 text-center">
+                    <a href="{{ route('register') }}" class="inline-flex items-center gap-3 rounded-full ai-gradient px-8 py-4 text-lg font-semibold text-white shadow-xl hover:opacity-90 transition-all">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                        </svg>
+                        {{ __('Register Now & Access All AI Tools Free') }}
+                    </a>
+                    <p class="mt-4 text-sm text-gray-500">{{ __('No credit card required. Start using AI instantly!') }}</p>
+                </div>
             </div>
         </div>
 
