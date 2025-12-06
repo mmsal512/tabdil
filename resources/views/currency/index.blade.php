@@ -53,6 +53,8 @@
                                 <label for="amount" class="block text-sm font-medium leading-6 text-gray-900">{{ __('Amount') }}</label>
                                 <div class="relative mt-2 rounded-md shadow-sm">
                                     <input type="text" name="amount" id="amount" value="1" 
+                                        inputmode="decimal"
+                                        pattern="[0-9]*"
                                         class="block w-full rounded-md border-0 py-3 pl-4 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-lg sm:leading-6 font-semibold" 
                                         placeholder="0.00"
                                         oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ','); convert()">

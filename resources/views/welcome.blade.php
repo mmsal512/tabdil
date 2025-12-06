@@ -18,7 +18,7 @@
         <header class="absolute inset-x-0 top-0 z-50">
             <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
                 <div class="flex lg:flex-1">
-                    <a href="#" class="-m-1.5 p-1.5 flex items-center gap-2">
+                    <a href="{{ route('home') }}" class="-m-1.5 p-1.5 flex items-center gap-2">
                         <img class="h-8 w-auto" src="{{ asset('images/logo.png') }}" alt="">
                         <span class="text-xl font-bold text-gray-900">{{ config('app.name') }}</span>
                     </a>
@@ -32,9 +32,9 @@
                     </button>
                 </div>
                 <div class="hidden lg:flex lg:gap-x-12">
-                    <a href="#features" class="text-sm font-semibold leading-6 text-gray-900">{{ __('Features') }}</a>
                     <a href="{{ route('currency.index') }}" class="text-sm font-semibold leading-6 text-gray-900">{{ __('Converter') }}</a>
-                    <a href="#about" class="text-sm font-semibold leading-6 text-gray-900">{{ __('About') }}</a>
+                    <a href="{{ route('login') }}" class="text-sm font-semibold leading-6 text-gray-900">{{ __('Log in') }}</a>
+                    <a href="{{ route('register') }}" class="text-sm font-semibold leading-6 text-gray-900">{{ __('Register') }}</a>
                 </div>
                 <div class="hidden lg:flex lg:flex-1 lg:justify-end gap-x-4 items-center">
                     <!-- Language Switcher -->
@@ -55,16 +55,9 @@
                         </div>
                     </div>
 
-                    @if (Route::has('login'))
-                        @auth
-                            <a href="{{ url('/dashboard') }}" class="text-sm font-semibold leading-6 text-gray-900">{{ __('Dashboard') }} <span aria-hidden="true">&rarr;</span></a>
-                        @else
-                            <a href="{{ route('login') }}" class="text-sm font-semibold leading-6 text-gray-900">{{ __('Log in') }}</a>
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="rounded-md bg-primary-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">{{ __('Register') }}</a>
-                            @endif
-                        @endauth
-                    @endif
+                    @auth
+                        <a href="{{ route('currency.index') }}" class="text-sm font-semibold leading-6 text-gray-900">{{ __('Dashboard') }} <span aria-hidden="true">&rarr;</span></a>
+                    @endauth
                 </div>
             </nav>
         </header>

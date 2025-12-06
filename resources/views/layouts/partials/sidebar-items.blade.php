@@ -17,6 +17,30 @@
 </li>
 
 @auth
+    {{-- AI Tools Section - Available for ALL authenticated users --}}
+    <li>
+        <div class="text-xs font-semibold leading-6 text-gray-400 mt-4 mb-2 uppercase tracking-wider">{{ __('AI Tools') }}</div>
+    </li>
+
+    <li>
+        <a href="{{ route('ai.studio.direct') }}" class="{{ request()->routeIs('ai.studio.direct') ? 'bg-gray-50 text-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' }} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+            <svg class="{{ request()->routeIs('ai.studio.direct') ? 'text-primary-600' : 'text-gray-400 group-hover:text-primary-600' }} h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+            </svg>
+            {{ __('AI Studio') }}
+        </a>
+    </li>
+
+    <li>
+        <a href="{{ route('ai.writer.direct') }}" class="{{ request()->routeIs('ai.writer.direct') ? 'bg-gray-50 text-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' }} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
+            <svg class="{{ request()->routeIs('ai.writer.direct') ? 'text-primary-600' : 'text-gray-400 group-hover:text-primary-600' }} h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+            </svg>
+            {{ __('Content Writer') }}
+        </a>
+    </li>
+
+    {{-- Admin Section - Only for admins --}}
     @if(Auth::user()->user_type === 'admin')
         <li>
             <div class="text-xs font-semibold leading-6 text-gray-400 mt-4 mb-2 uppercase tracking-wider">{{ __('Administration') }}</div>
@@ -56,28 +80,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
                 </svg>
                 {{ __('Users') }}
-            </a>
-        </li>
-
-        <li>
-            <div class="text-xs font-semibold leading-6 text-gray-400 mt-4 mb-2 uppercase tracking-wider">{{ __('AI Tools') }}</div>
-        </li>
-
-        <li>
-            <a href="{{ route('ai.studio.direct') }}" class="{{ request()->routeIs('ai.studio.direct') ? 'bg-gray-50 text-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' }} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
-                <svg class="{{ request()->routeIs('ai.studio.direct') ? 'text-primary-600' : 'text-gray-400 group-hover:text-primary-600' }} h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                </svg>
-                {{ __('AI Studio') }}
-            </a>
-        </li>
-
-        <li>
-            <a href="{{ route('ai.writer.direct') }}" class="{{ request()->routeIs('ai.writer.direct') ? 'bg-gray-50 text-primary-600' : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50' }} group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold">
-                <svg class="{{ request()->routeIs('ai.writer.direct') ? 'text-primary-600' : 'text-gray-400 group-hover:text-primary-600' }} h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                </svg>
-                {{ __('Content Writer') }}
             </a>
         </li>
     @endif

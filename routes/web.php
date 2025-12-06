@@ -66,15 +66,25 @@ Route::get('/test-ai', function () {
 
 // Direct AI Studio Route - Bypassing everything
 Route::get('/smart-studio', function () {
-    // Quick stats or zeros
-    $stats = [
-        'total_requests' => \App\Models\AiRequestLog::count(),
-        'today_requests' => \App\Models\AiRequestLog::whereDate('created_at', now()->today())->count(),
-        'total_tokens' => \App\Models\AiRequestLog::sum('tokens'),
-        'last_request' => \App\Models\AiRequestLog::latest()->first()->created_at ?? null,
-    ];
+    $user = Auth::user();
+    $isAdmin = $user && $user->user_type === 'admin';
     
-    return view('admin.ai.studio', compact('stats'));
+    // Admin sees global stats, regular user sees personal stats
+    if ($isAdmin) {
+        $stats = [
+            'total_requests' => \App\Models\AiRequestLog::count(),
+            'today_requests' => \App\Models\AiRequestLog::whereDate('created_at', now()->today())->count(),
+            'total_tokens' => \App\Models\AiRequestLog::sum('tokens'),
+        ];
+    } else {
+        $stats = [
+            'total_requests' => \App\Models\AiRequestLog::where('user_id', $user->id)->count(),
+            'today_requests' => \App\Models\AiRequestLog::where('user_id', $user->id)->whereDate('created_at', now()->today())->count(),
+            'total_tokens' => \App\Models\AiRequestLog::where('user_id', $user->id)->sum('tokens'),
+        ];
+    }
+    
+    return view('admin.ai.studio', compact('stats', 'isAdmin'));
 })->middleware(['auth'])->name('ai.studio.direct');
 
 // Direct Content Writer Route
