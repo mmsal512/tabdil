@@ -73,7 +73,7 @@
         </div>
 
         <!-- Header -->
-        <header class="absolute inset-x-0 top-10 z-50">
+        <header class="absolute inset-x-0 top-14 z-50" x-data="{ mobileMenuOpen: false }">
             <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
                 <div class="flex lg:flex-1">
                     <a href="{{ route('home') }}" class="-m-1.5 p-1.5 flex items-center gap-2">
@@ -82,8 +82,8 @@
                     </a>
                 </div>
                 <div class="flex lg:hidden">
-                    <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
-                        <span class="sr-only">Open main menu</span>
+                    <button type="button" @click="mobileMenuOpen = true" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
+                        <span class="sr-only">{{ __('Open main menu') }}</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                         </svg>
@@ -120,34 +120,93 @@
                     @endauth
                 </div>
             </nav>
+
+            <!-- Mobile menu, show/hide based on menu open state. -->
+            <div class="lg:hidden" role="dialog" aria-modal="true" x-show="mobileMenuOpen" x-cloak>
+                <!-- Background backdrop, show/hide based on slide-over state. -->
+                <div class="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm" @click="mobileMenuOpen = false"></div>
+                <div class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10" 
+                     x-show="mobileMenuOpen"
+                     x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700"
+                     x-transition:enter-start="translate-x-full"
+                     x-transition:enter-end="translate-x-0"
+                     x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700"
+                     x-transition:leave-start="translate-x-0"
+                     x-transition:leave-end="translate-x-full">
+                    <div class="flex items-center justify-between">
+                        <a href="#" class="-m-1.5 p-1.5 flex items-center gap-2">
+                            <img class="h-8 w-auto" src="{{ asset('images/logo.png') }}" alt="">
+                            <span class="text-xl font-bold text-gray-900">{{ config('app.name') }}</span>
+                        </a>
+                        <button type="button" @click="mobileMenuOpen = false" class="-m-2.5 rounded-md p-2.5 text-gray-700">
+                            <span class="sr-only">{{ __('Close menu') }}</span>
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="mt-6 flow-root">
+                        <div class="-my-6 divide-y divide-gray-500/10">
+                            <div class="space-y-2 py-6">
+                                <a href="{{ route('currency.index') }}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">{{ __('Converter') }}</a>
+                                <a href="#ai-tools" @click="mobileMenuOpen = false" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">{{ __('AI Tools') }}</a>
+                                <a href="{{ route('login') }}" class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">{{ __('Log in') }}</a>
+                            </div>
+                            <div class="py-6 space-y-4">
+                                <!-- Language Switcher Mobile -->
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-semibold text-gray-900">{{ __('Language') }}</span>
+                                    <div class="flex gap-4">
+                                        <a href="{{ route('locale.switch', 'ar') }}" class="text-sm px-2 py-1 rounded {{ app()->getLocale() == 'ar' ? 'bg-primary-50 text-primary-600' : 'text-gray-500' }}">العربية</a>
+                                        <a href="{{ route('locale.switch', 'en') }}" class="text-sm px-2 py-1 rounded {{ app()->getLocale() == 'en' ? 'bg-primary-50 text-primary-600' : 'text-gray-500' }}">English</a>
+                                    </div>
+                                </div>
+                                @auth
+                                    <a href="{{ route('currency.index') }}" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">{{ __('Dashboard') }}</a>
+                                @else
+                                    <a href="{{ route('register') }}" class="flex w-full items-center justify-center rounded-md ai-gradient px-3 py-2.5 text-base font-semibold text-white shadow-sm hover:opacity-90">{{ __('Register Free') }}</a>
+                                @endauth
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </header>
 
         <!-- Hero Section -->
-        <div class="relative isolate px-6 pt-24 lg:px-8">
+        <div class="relative isolate px-6 pt-14 lg:px-8">
             <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
                 <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#667eea] to-[#764ba2] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
             </div>
-            <div class="mx-auto max-w-3xl py-32 sm:py-40 lg:py-48">
+            <div class="mx-auto max-w-3xl py-24 sm:py-32 lg:py-40">
                 <div class="hidden sm:mb-8 sm:flex sm:justify-center">
                     <div class="relative rounded-full px-4 py-1.5 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20 flex items-center gap-2">
                         <span class="ai-icon-bg text-white px-2 py-0.5 rounded-full text-xs font-bold">AI</span>
                         {{ __('AI-Powered Currency Conversion & Content Tools') }}
                     </div>
                 </div>
+                <!-- Mobile Only Badge -->
+                <div class="flex justify-center mb-6 sm:hidden">
+                    <div class="relative rounded-full px-3 py-1 text-xs leading-5 text-gray-600 ring-1 ring-gray-900/10 flex items-center gap-1.5 bg-white/50 backdrop-blur-sm">
+                        <span class="ai-icon-bg text-white px-1.5 py-0.5 rounded-full text-[10px] font-bold">AI</span>
+                        {{ __('AI-Powered Tools') }}
+                    </div>
+                </div>
+
                 <div class="text-center">
-                    <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+                    <h1 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-6xl">
                         {{ __('Smart Currency Conversion') }}
-                        <span class="block bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent pb-2">{{ __('Powered by AI') }}</span>
+                        <span class="block bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent pb-2 mt-2 sm:mt-0">{{ __('Powered by AI') }}</span>
                     </h1>
-                    <p class="mt-6 text-lg leading-8 text-gray-600">{{ __('Convert currencies instantly with real-time rates. Plus, unlock AI-powered tools for content generation, translation, and more – all in one platform!') }}</p>
-                    <div class="mt-10 flex items-center justify-center gap-x-6">
-                        <a href="{{ route('register') }}" class="rounded-md ai-gradient px-6 py-3 text-sm font-semibold text-white shadow-lg hover:opacity-90 transition-all flex items-center gap-2">
+                    <p class="mt-6 text-base sm:text-lg leading-7 sm:leading-8 text-gray-600 px-4 sm:px-0">{{ __('Convert currencies instantly with real-time rates. Plus, unlock AI-powered tools for content generation, translation, and more – all in one platform!') }}</p>
+                    <div class="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-x-6">
+                        <a href="{{ route('register') }}" class="w-full sm:w-auto justify-center rounded-md ai-gradient px-6 py-3 text-sm font-semibold text-white shadow-lg hover:opacity-90 transition-all flex items-center gap-2">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                             </svg>
                             {{ __('Start Free with AI') }}
                         </a>
-                        <a href="{{ route('currency.index') }}" class="text-sm font-semibold leading-6 text-gray-900 hover:text-primary-600 transition-colors">{{ __('Try Converter') }} <span aria-hidden="true">→</span></a>
+                        <a href="{{ route('currency.index') }}" class="text-sm font-semibold leading-6 text-gray-900 hover:text-primary-600 transition-colors">{{ __('Try Converter') }} <span aria-hidden="true" class="rtl:rotate-180 inline-block">→</span></a>
                     </div>
                 </div>
             </div>
