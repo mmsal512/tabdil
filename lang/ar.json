@@ -353,5 +353,10 @@
     "Choose a tool above to generate content": "اختر أداة أعلاه لإنشاء المحتوى",
     "Open main menu": "فتح القائمة الرئيسية",
     "Close menu": "إغلاق القائمة",
-    "AI-Powered Tools": "أدوات الذكاء الاصطناعي"
+    "AI-Powered Tools": "أدوات الذكاء الاصطناعي",
+    "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.": "هل نسيت كلمة المرور؟ لا مشكلة. فقط اخبرنا عن عنوان بريدك الإلكتروني وسنترسل لك رابط إعادة تعيين كلمة المرور الذي سيساعدك في اختيار كلمة مرور جديدة.",
+    "Email Password Reset Link": "إرسال رابط إعادة تعيين كلمة المرور",
+    "Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.": "شكراً على التسجيل! قبل البدء، هل يمكنك التحقق من عنوان بريدك الإلكتروني من خلال الضغط على الرابط الذي قمنا بارساله لك؟ إذا لم تلق البريد الإلكتروني، سنترسل لك رابط آخر بالتأكيد.",
+    "A new verification link has been sent to the email address you provided during registration.": "تم إرسال رابط التحقق جديد إلى عنوان بريدك الإلكتروني الذي قدمته أثناء التسجيل.",
+    "Resend Verification Email": "إعادة إرسال البريد الإلكتروني للتحقق"
 }

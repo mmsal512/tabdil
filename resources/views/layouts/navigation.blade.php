@@ -78,7 +78,7 @@
                             </x-dropdown-link>
 
                             <!-- Authentication -->
-                            <form method="POST" action="{{ route('logout') }}">
+                            <form method="POST" action="{{ route('logout') }}" data-turbo="false">
                                 @csrf
 
                                 <x-dropdown-link :href="route('logout')"

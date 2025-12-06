@@ -13,6 +13,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     <style>
+        [x-cloak] { display: none !important; }
         /* AI Gradient Animation */
         @keyframes gradient-shift {
             0%, 100% { background-position: 0% 50%; }
@@ -122,7 +123,7 @@
             </nav>
 
             <!-- Mobile menu, show/hide based on menu open state. -->
-            <div class="lg:hidden" role="dialog" aria-modal="true" x-show="mobileMenuOpen" x-cloak>
+            <div class="lg:hidden" role="dialog" aria-modal="true" x-show="mobileMenuOpen" x-cloak style="display: none;">
                 <!-- Background backdrop, show/hide based on slide-over state. -->
                 <div class="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm" @click="mobileMenuOpen = false"></div>
                 <div class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10" 
