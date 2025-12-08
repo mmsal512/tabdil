@@ -7,11 +7,11 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'provider' => env('AI_PROVIDER', 'openrouter'),
+    'provider' => strtolower(env('AI_PROVIDER', 'openrouter')),
 
     'openrouter' => [
         'api_key' => env('AI_API_KEY', ''),
-        'model' => env('AI_MODEL', 'google/gemini-2.0-flash-exp:free'),
+        'model' => env('AI_MODEL', 'tngtech/deepseek-r1t2-chimera:free'),
         'base_url' => 'https://openrouter.ai/api/v1',
         'max_tokens' => env('AI_MAX_TOKENS', 2048),
         'temperature' => env('AI_TEMPERATURE', 0.7),

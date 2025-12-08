@@ -19,7 +19,7 @@ class AiService
     public function __construct()
     {
         // Fix: Use correct config key 'ai.provider' instead of 'ai.default'
-        $this->provider = config('ai.provider', 'openrouter');
+        $this->provider = strtolower(config('ai.provider', 'openrouter'));
         
         if ($this->provider === 'openrouter') {
             $this->apiKey = config('ai.openrouter.api_key', '');
@@ -48,7 +48,7 @@ class AiService
     public function chat(string $message, ?string $systemPrompt = null, array $options = []): array
     {
         // Force check current provider from config, ignoring cached construct value
-        $currentProvider = config('ai.provider', 'openrouter');
+        $currentProvider = strtolower(config('ai.provider', 'openrouter'));
         
         if ($currentProvider === 'gemini') {
             return $this->chatWithGemini($message, $systemPrompt, $options);
@@ -155,7 +155,7 @@ class AiService
         $startTime = microtime(true);
         
         // Force Fresh Config Reading (Fix for Laravel Cloud Caching)
-        $isOpenRouter = (config('ai.provider') === 'openrouter');
+        $isOpenRouter = (strtolower(config('ai.provider')) === 'openrouter');
         
         if ($isOpenRouter) {
             $apiKey = config('ai.openrouter.api_key');
