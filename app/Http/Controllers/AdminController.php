@@ -75,6 +75,9 @@ class AdminController extends Controller
             \Illuminate\Support\Facades\Cache::forget("exchange_rates_{$currency}");
         }
 
+        // Clear the specific buy/sell rates cache used for YER conversions
+        \Illuminate\Support\Facades\Cache::forget("buy_sell_rates_yer");
+
         return redirect()->back()->with('success', __('Backup rates updated successfully.'));
     }
 
