@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Models\ExchangeRate;
 use App\Models\BackupRate;
+use App\Models\HistoricalRate;
 
 class CurrencyConversionService
 {
@@ -74,7 +75,18 @@ class CurrencyConversionService
 
         // Case A: Foreign -> Foreign (Neither is YER)
         if ($from !== 'YER' && $to !== 'YER') {
-            // Try API first (which now includes DB fallback)
+            // Case 3: Foreign -> Foreign
+            // Logic: Amount * Target Currency Rate (from historical_rates)
+            $historicalRate = HistoricalRate::where('base_currency', $from)
+                ->where('target_currency', $to)
+                ->latest('date')
+                ->value('rate_value');
+                
+            if ($historicalRate) {
+                return round($amount * $historicalRate, 4);
+            }
+            
+            // Fallback to API/ExchangeRate if not found in history
             return $this->convertViaApi($from, $to, $amount);
         }
 
@@ -164,6 +176,18 @@ class CurrencyConversionService
                                         [
                                             'rate_value' => $rate,
                                             'timestamp' => now()
+                                        ]
+                                    );
+
+                                    // Save to Historical Rates for Foreign-to-Foreign usage
+                                    HistoricalRate::updateOrCreate(
+                                        [
+                                            'base_currency' => $from,
+                                            'target_currency' => $target,
+                                            'date' => now()->toDateString()
+                                        ],
+                                        [
+                                            'rate_value' => $rate
                                         ]
                                     );
                                 }
