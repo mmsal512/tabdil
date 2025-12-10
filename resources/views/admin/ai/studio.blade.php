@@ -202,7 +202,7 @@
                             {{ __('Summarize') }}
                         </button>
                     </div>
-                    <div id="summarize-output" class="hidden p-4 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl border border-purple-100"></div>
+                    <div id="summarize-output" class="hidden p-4 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl border border-purple-100 whitespace-pre-wrap"></div>
                 </div>
             </div>
 
@@ -219,7 +219,7 @@
                     <button onclick="runTitleGen()" class="px-6 py-3 ai-gradient-bg text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all hover:scale-105">
                         {{ __('Generate') }}
                     </button>
-                    <div id="title-output" class="hidden p-4 bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border border-amber-100"></div>
+                    <div id="title-output" class="hidden p-4 bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border border-amber-100 whitespace-pre-wrap"></div>
                 </div>
             </div>
 
@@ -242,7 +242,7 @@
                             {{ __('Translate') }}
                         </button>
                     </div>
-                    <div id="translate-output" class="hidden p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-100"></div>
+                    <div id="translate-output" class="hidden p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-100 whitespace-pre-wrap"></div>
                 </div>
             </div>
 
@@ -259,7 +259,7 @@
                     <button onclick="runSentiment()" class="px-6 py-3 ai-gradient-bg text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all hover:scale-105">
                         {{ __('Analyze') }}
                     </button>
-                    <div id="sentiment-output" class="hidden p-4 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl border border-emerald-100"></div>
+                    <div id="sentiment-output" class="hidden p-4 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl border border-emerald-100 whitespace-pre-wrap"></div>
                 </div>
             </div>
 
@@ -283,7 +283,7 @@
                     <button onclick="runCustom()" class="px-6 py-3 ai-gradient-bg text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all hover:scale-105">
                         {{ __('Run') }}
                     </button>
-                    <div id="custom-output" class="hidden p-4 bg-gradient-to-br from-rose-50 to-pink-50 rounded-xl border border-rose-100"></div>
+                    <div id="custom-output" class="hidden p-4 bg-gradient-to-br from-rose-50 to-pink-50 rounded-xl border border-rose-100 whitespace-pre-wrap"></div>
                 </div>
             </div>
         </div>
@@ -348,7 +348,7 @@
             
             const result = await aiRequest('chat', message);
             if (result.success) {
-                messages.innerHTML += `<div class="chat-bubble flex justify-start"><div class="bg-white border border-gray-200 rounded-2xl px-4 py-3 max-w-md shadow">${result.output}</div></div>`;
+                messages.innerHTML += `<div class="chat-bubble flex justify-start"><div class="bg-white border border-gray-200 rounded-2xl px-4 py-3 max-w-md shadow whitespace-pre-wrap">${result.output}</div></div>`;
             } else {
                 messages.innerHTML += `<div class="chat-bubble flex justify-start"><div class="bg-red-50 border border-red-200 text-red-700 rounded-2xl px-4 py-3">${result.error}</div></div>`;
             }
