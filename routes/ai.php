@@ -11,14 +11,14 @@ use App\Http\Controllers\Api\AiApiController;
 */
 
 // Admin AI Pages
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['web', 'auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/content-writer', [AiController::class, 'contentWriter'])->name('ai.content-writer');
     Route::get('/ai-logs', [AiController::class, 'logs'])->name('ai.logs');
 });
 
 // Standalone AI Studio Route (No Admin Prefix)
 Route::get('/studio-panel', [AiController::class, 'studio'])
-    ->middleware(['auth'])
+    ->middleware(['web', 'auth'])
     ->name('ai.studio');
 
 // API Routes for AI
