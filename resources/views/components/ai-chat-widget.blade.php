@@ -98,24 +98,60 @@ function aiChatWidget() {
             });
 
             try {
-                const response = await fetch('/api/ai/chat', {
+                // Send message to n8n webhook
+                // The AI Agent reads from: $json.body.message
+                const response = await fetch('https://n8ntabdil.n8ntabdil.online/webhook/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
                         'Accept': 'application/json',
                     },
-                    body: JSON.stringify({ message })
+                    body: JSON.stringify({ 
+                        message: message
+                    })
                 });
 
-                const result = await response.json();
+                // Parse webhook response from n8n AI Agent
+                let result = await response.json();
                 
-                if (result.success) {
-                    this.messages.push({ role: 'assistant', content: result.output });
-                } else {
-                    this.messages.push({ role: 'assistant', content: result.error || '{{ __("Sorry, something went wrong.") }}' });
+                // n8n may return an array (First Incoming Item from AI Agent)
+                if (Array.isArray(result) && result.length > 0) {
+                    result = result[0];
                 }
+                
+                // Extract the assistant message from n8n AI Agent response
+                let assistantMessage = '';
+                
+                // n8n AI Agent typically returns { output: "..." }
+                if (typeof result === 'string') {
+                    assistantMessage = result;
+                } else if (result.output) {
+                    assistantMessage = result.output;
+                } else if (result.text) {
+                    assistantMessage = result.text;
+                } else if (result.response) {
+                    assistantMessage = result.response;
+                } else if (result.message) {
+                    assistantMessage = result.message;
+                } else if (result.content) {
+                    assistantMessage = result.content;
+                } else if (result.reply) {
+                    assistantMessage = result.reply;
+                } else if (result.data && typeof result.data === 'string') {
+                    assistantMessage = result.data;
+                } else if (result.data && result.data.output) {
+                    assistantMessage = result.data.output;
+                } else {
+                    // Fallback: stringify the entire response for debugging
+                    console.log('n8n response structure:', result);
+                    assistantMessage = typeof result === 'object' ? 
+                        (Object.values(result).find(v => typeof v === 'string' && v.length > 0) || JSON.stringify(result)) 
+                        : String(result);
+                }
+                
+                this.messages.push({ role: 'assistant', content: assistantMessage });
             } catch (error) {
+                console.error('Webhook error:', error);
                 this.messages.push({ role: 'assistant', content: '{{ __("Connection error. Please try again.") }}' });
             }
 
