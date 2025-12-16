@@ -474,5 +474,8 @@
             </div>
         </footer>
     </div>
+    
+    <!-- AI Chat Widget -->
+    @include('components.ai-chat-widget')
 </body>
 </html>
