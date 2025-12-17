@@ -98,8 +98,10 @@ function aiChatWidget() {
             });
 
             try {
-                // Send message to n8n webhook
-                // The AI Agent reads from: $json.body.message
+                // Send message to n8n webhook with timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+                
                 const response = await fetch('https://n8ntabdil.n8ntabdil.online/webhook/chat', {
                     method: 'POST',
                     headers: {
@@ -108,8 +110,16 @@ function aiChatWidget() {
                     },
                     body: JSON.stringify({ 
                         message: message
-                    })
+                    }),
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
+                
+                // Check if response is OK
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
                 // Parse webhook response from n8n AI Agent
                 let result = await response.json();
@@ -152,7 +162,13 @@ function aiChatWidget() {
                 this.messages.push({ role: 'assistant', content: assistantMessage });
             } catch (error) {
                 console.error('Webhook error:', error);
-                this.messages.push({ role: 'assistant', content: '{{ __("Connection error. Please try again.") }}' });
+                let errorMessage = '{{ __("Connection error. Please try again.") }}';
+                
+                if (error.name === 'AbortError') {
+                    errorMessage = '{{ __("Request timed out. Please try again.") }}';
+                }
+                
+                this.messages.push({ role: 'assistant', content: errorMessage });
             }
 
             this.isTyping = false;
