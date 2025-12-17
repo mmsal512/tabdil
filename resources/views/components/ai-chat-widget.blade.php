@@ -100,7 +100,7 @@ function aiChatWidget() {
             try {
                 // Send message to n8n webhook
                 // The AI Agent reads from: $json.body.message
-                const response = await fetch('https://n8ntabdil.n8ntabdil.online/webhook/chat', {
+                const response = await fetch('https://n8ntabdil.n8ntabdil.online/webhook-test/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
