@@ -4,7 +4,9 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\CurrencyController;
-use App\Http\Controllers\AdminController; // Moved this use statement up
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\SupportTicketController;
+use App\Http\Controllers\SupportController;
 
 // Locale Switching
 Route::get('/locale/{locale}', function ($locale) {
@@ -115,6 +117,9 @@ Route::get('/rates', function () {
 
 Route::get('/comparison', [CurrencyController::class, 'getComparisonRates'])->name('currency.comparison');
 
+// Support Widget Route
+Route::post('/support/send', [SupportController::class, 'send'])->name('support.send');
+
 use App\Http\Controllers\FavoriteController;
 
 Route::get('/dashboard', [FavoriteController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
@@ -146,6 +151,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/users', [AdminController::class, 'users'])->name('users');
     Route::post('/users/{user}/toggle-status', [AdminController::class, 'toggleUserStatus'])->name('users.toggle-status');
     Route::post('/users/{user}/reset-password', [AdminController::class, 'resetUserPassword'])->name('users.reset-password');
+
+    // Support Tickets Routes
+    Route::get('/support', [SupportTicketController::class, 'index'])->name('support.index');
+    Route::patch('/support/{ticket}/status', [SupportTicketController::class, 'updateStatus'])->name('support.updateStatus');
+    Route::delete('/support/{ticket}', [SupportTicketController::class, 'destroy'])->name('support.destroy');
 });
 
 require __DIR__.'/auth.php';

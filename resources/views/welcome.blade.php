@@ -475,6 +475,9 @@
         </footer>
     </div>
     
+    <!-- Support Widget -->
+    @include('components.support-widget')
+
     <!-- AI Chat Widget -->
     @include('components.ai-chat-widget')
 </body>
