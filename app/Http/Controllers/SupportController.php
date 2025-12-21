@@ -74,9 +74,22 @@ class SupportController extends Controller
             // field-4: Status (الحالة) -> Value: 'جديد'
             // field-5: Priority (الاولوية) -> Value: 'عادي'
 
-            // Ensure type is one of the allowed values in n8n
-            $allowedTypes = ['استفسار', 'اقتراح', 'مشكلة/شكوى', 'اخرى'];
-            $type = in_array($ticket->type, $allowedTypes) ? $ticket->type : 'اخرى';
+            // Explicit mapping to handle potential encoding issues, spaces, or language variants
+            $typeMapping = [
+                'استفسار' => 'استفسار',
+                'Inquiry' => 'استفسار',
+                'اقتراح' => 'اقتراح',
+                'Suggestion' => 'اقتراح',
+                'مشكلة/شكوى' => 'مشكلة/شكوى',
+                'Complaint' => 'مشكلة/شكوى',
+                'اخرى' => 'اخرى',
+                'Other' => 'اخرى',
+                // Handle potential variations with spaces
+                'مشكلة / شكوى' => 'مشكلة/شكوى',
+            ];
+
+            $inputType = trim($ticket->type);
+            $type = $typeMapping[$inputType] ?? 'اخرى';
 
             $data = [
                 'field-0' => $ticket->name ?? 'Anonymous',
