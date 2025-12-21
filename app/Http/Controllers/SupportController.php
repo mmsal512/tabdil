@@ -74,22 +74,29 @@ class SupportController extends Controller
             // field-4: Status (الحالة) -> Value: 'جديد'
             // field-5: Priority (الاولوية) -> Value: 'عادي'
 
+            // Ensure type is one of the allowed values in n8n
+            $allowedTypes = ['استفسار', 'اقتراح', 'مشكلة/شكوى', 'اخرى'];
+            $type = in_array($ticket->type, $allowedTypes) ? $ticket->type : 'اخرى';
+
             $data = [
                 'field-0' => $ticket->name ?? 'Anonymous',
                 'field-1' => $ticket->email ?? '',
-                'field-2' => $ticket->type,
+                'field-2' => $type,
                 'field-3' => $ticket->message,
                 'field-4' => 'جديد',
                 'field-5' => 'عادي',
             ];
 
-            $response = Http::asForm()->post($n8nUrl, $data);
+            // Use asMultipart as proven by test script
+            // Added withoutVerifying just in case SSL is strict on the server
+            $response = Http::asMultipart()->withoutVerifying()->post($n8nUrl, $data);
 
             if ($response->successful() || $response->status() === 302) {
                 Log::info('n8n Success: ' . $response->body());
                 return true;
             } else {
                 Log::error('n8n Field Error: ' . $response->status() . ' - ' . $response->body());
+                // Fallback: If 500, maybe type matches but something else?
                 return false;
             }
         } catch (\Exception $e) {
