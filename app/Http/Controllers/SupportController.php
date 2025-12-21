@@ -91,11 +91,20 @@ class SupportController extends Controller
             $inputType = trim($ticket->type);
             $type = $typeMapping[$inputType] ?? 'اخرى';
 
+            // Workaround: 'مشكلة/شكوى' fails in Airtable sync (dropdown mismatch).
+            // We map it to 'اخرى' to ensure storage and email delivery,
+            // but add the original type to the message body for the Admin.
+            $messageToSend = $ticket->message;
+            if ($type === 'مشكلة/شكوى') {
+                $type = 'اخرى';
+                $messageToSend = "[[ نوع الرسالة: مشكلة/شكوى ]]\n\n" . $ticket->message;
+            }
+
             $data = [
                 'field-0' => $ticket->name ?? 'Anonymous',
                 'field-1' => $ticket->email ?? '',
                 'field-2' => $type,
-                'field-3' => $ticket->message,
+                'field-3' => $messageToSend,
                 'field-4' => 'جديد',
                 'field-5' => 'عادي',
             ];
