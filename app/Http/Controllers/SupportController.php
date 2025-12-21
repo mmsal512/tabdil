@@ -66,17 +66,21 @@ class SupportController extends Controller
             // In support-widget.blade.php values are: value="استفسار", value="اقتراح"...
             // So ticket->type is likely already Arabic.
 
+            // Correct Mapping based on n8n Form HTML inspection:
+            // field-0: Name (الاسم)
+            // field-1: Email (البريد الالكتروني)
+            // field-2: Type (نوع الرسالة) -> Values: 'استفسار', 'اقتراح', 'مشكلة/شكوى', 'اخرى'
+            // field-3: Message (الرسالة)
+            // field-4: Status (الحالة) -> Value: 'جديد'
+            // field-5: Priority (الاولوية) -> Value: 'عادي'
+
             $data = [
-                'الاسم' => $ticket->name ?? 'Anonymous',
-                'البريد الالكتروني' => $ticket->email ?? '',
-                'نوع الرسالة' => $ticket->type,
-                'الرسالة' => $ticket->message, // Correct field label from n8n Form Trigger
-                // Optional fields if defined in n8n form:
-                'الحالة' => 'جديد',
-                'الاولوية' => 'عادي',
-                // Detailed technical fields can be appended if n8n allows extra fields, 
-                // but strictly speaking, Form Trigger validates against defined fields.
-                // We will stick to the defined fields to ensure acceptance.
+                'field-0' => $ticket->name ?? 'Anonymous',
+                'field-1' => $ticket->email ?? '',
+                'field-2' => $ticket->type,
+                'field-3' => $ticket->message,
+                'field-4' => 'جديد',
+                'field-5' => 'عادي',
             ];
 
             $response = Http::asMultipart()->post($n8nUrl, $data);
