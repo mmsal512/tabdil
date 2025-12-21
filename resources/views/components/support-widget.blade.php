@@ -54,7 +54,7 @@
                     <select name="type" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors">
                         <option value="استفسار">{{ __('Inquiry') }}</option>
                         <option value="اقتراح">{{ __('Suggestion') }}</option>
-                        <option value="مشكلة/شكوى">{{ __('Complaint') }}</option>
+                        <option value="مشكلة">{{ __('Complaint') }}</option>
                         <option value="اخرى">{{ __('Other') }}</option>
                     </select>
                 </div>
