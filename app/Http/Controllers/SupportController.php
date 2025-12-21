@@ -83,12 +83,17 @@ class SupportController extends Controller
                 'field-5' => 'عادي',
             ];
 
-            $response = Http::asMultipart()->post($n8nUrl, $data);
+            $response = Http::asForm()->post($n8nUrl, $data);
 
-            // If n8n returns a redirect (302) or success (200/201), we consider it sent
-            return $response->successful() || $response->status() === 302;
+            if ($response->successful() || $response->status() === 302) {
+                Log::info('n8n Success: ' . $response->body());
+                return true;
+            } else {
+                Log::error('n8n Field Error: ' . $response->status() . ' - ' . $response->body());
+                return false;
+            }
         } catch (\Exception $e) {
-            Log::error('N8n Connection Error: ' . $e->getMessage());
+            Log::error('N8n Connection Exception: ' . $e->getMessage());
             return false;
         }
     }
