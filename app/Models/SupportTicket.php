@@ -17,5 +17,6 @@ class SupportTicket extends Model
         'status',
         'priority',
         'ip_address',
+        'synced_to_n8n',
     ];
 }
