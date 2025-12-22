@@ -135,21 +135,21 @@ function aiChatWidget() {
                 // n8n AI Agent typically returns { output: "..." }
                 if (typeof result === 'string') {
                     assistantMessage = result;
-                } else if (result.output) {
+                } else if (result.output !== undefined) {
                     assistantMessage = result.output;
-                } else if (result.text) {
+                } else if (result.text !== undefined) {
                     assistantMessage = result.text;
-                } else if (result.response) {
+                } else if (result.response !== undefined) {
                     assistantMessage = result.response;
-                } else if (result.message) {
+                } else if (result.message !== undefined) {
                     assistantMessage = result.message;
-                } else if (result.content) {
+                } else if (result.content !== undefined) {
                     assistantMessage = result.content;
-                } else if (result.reply) {
+                } else if (result.reply !== undefined) {
                     assistantMessage = result.reply;
                 } else if (result.data && typeof result.data === 'string') {
                     assistantMessage = result.data;
-                } else if (result.data && result.data.output) {
+                } else if (result.data && result.data.output !== undefined) {
                     assistantMessage = result.data.output;
                 } else {
                     // Fallback: stringify the entire response for debugging
