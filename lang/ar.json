@@ -398,5 +398,8 @@
     "Reply via Email": "الرد عبر البريد",
     "Re: Your message to Tabdil": "رد: رسالتك إلى تبديل",
     "Regarding your message:": "بخصوص رسالتك:",
-    "No tickets found.": "لا توجد رسائل."
+    "No tickets found.": "لا توجد رسائل.",
+    "Type": "النوع",
+    "Message": "الرسالة",
+    "All": "الكل"
 }
