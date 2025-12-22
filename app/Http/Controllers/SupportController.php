@@ -26,9 +26,25 @@ class SupportController extends Controller
 
         try {
             // 2. Save to Local Database FIRST
+            // Prepare Data with Backend Fallback for Logged In Users
+            $name = $request->name;
+            $email = $request->email;
+
+            if (auth()->check()) {
+                $user = auth()->user();
+                // Fallback to user data if fields are empty
+                if (empty($name)) {
+                    $name = $user->name;
+                }
+                if (empty($email)) {
+                    $email = $user->email;
+                }
+            }
+
+            // 2. Save to Local Database FIRST
             $ticket = SupportTicket::create([
-                'name' => $request->name,
-                'email' => $request->email,
+                'name' => $name,
+                'email' => $email,
                 'type' => $request->type ?? 'Other',
                 'message' => $request->message,
                 'ip_address' => $request->ip(),
