@@ -9,4 +9,4 @@ Artisan::command('inspire', function () {
 
 use Illuminate\Support\Facades\Schedule;
 
-Schedule::command('support:sync-n8n')->everyFiveMinutes();
+Schedule::command('support:sync-n8n')->everyMinute();
