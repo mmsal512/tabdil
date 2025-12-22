@@ -158,4 +158,23 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/support/{ticket}', [SupportTicketController::class, 'destroy'])->name('support.destroy');
 });
 
+// External Cron Webhook for Support Ticket Sync
+// This can be called by services like cron-job.org every minute
+Route::get('/cron/sync-support/{secret}', function ($secret) {
+    // Verify secret key to prevent unauthorized access
+    if ($secret !== config('app.cron_secret', 'tabdil-sync-512')) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+    
+    // Run the sync command
+    \Illuminate\Support\Facades\Artisan::call('support:sync-n8n');
+    $output = \Illuminate\Support\Facades\Artisan::output();
+    
+    return response()->json([
+        'status' => 'success',
+        'output' => $output,
+        'timestamp' => now()->toDateTimeString()
+    ]);
+});
+
 require __DIR__.'/auth.php';
