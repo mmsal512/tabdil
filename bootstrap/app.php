@@ -28,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Add SetLocale to web middleware group
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\TrackVisitor::class,
         ]);
         
         // Ensure CSRF protection is enabled

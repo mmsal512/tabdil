@@ -10,3 +10,10 @@ Artisan::command('inspire', function () {
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('support:sync-n8n')->everyMinute();
+
+// Visitor Analytics Scheduling
+// Check every minute if it's time to send visitor report (based on admin settings)
+Schedule::command('visitors:send-report')->everyMinute();
+
+// Check for traffic anomalies every 15 minutes
+Schedule::command('visitors:check-alerts')->everyFifteenMinutes();

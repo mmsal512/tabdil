@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\SupportTicketController;
+use App\Http\Controllers\Admin\VisitorController;
 use App\Http\Controllers\SupportController;
 
 // Locale Switching
@@ -156,6 +157,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/support', [SupportTicketController::class, 'index'])->name('support.index');
     Route::patch('/support/{ticket}/status', [SupportTicketController::class, 'updateStatus'])->name('support.updateStatus');
     Route::delete('/support/{ticket}', [SupportTicketController::class, 'destroy'])->name('support.destroy');
+
+    // Visitor Analytics Routes
+    Route::get('/visitors', [VisitorController::class, 'index'])->name('visitors.index');
+    Route::get('/visitors/settings', [VisitorController::class, 'settings'])->name('visitors.settings');
+    Route::post('/visitors/settings', [VisitorController::class, 'updateSettings'])->name('visitors.settings.update');
+    Route::post('/visitors/test-notification', [VisitorController::class, 'sendTestNotification'])->name('visitors.test-notification');
+    Route::get('/visitors/chart-data', [VisitorController::class, 'chartData'])->name('visitors.chart-data');
 });
 
 // External Cron Webhook for Support Ticket Sync
@@ -168,6 +176,43 @@ Route::get('/cron/sync-support/{secret}', function ($secret) {
     
     // Run the sync command
     \Illuminate\Support\Facades\Artisan::call('support:sync-n8n');
+    $output = \Illuminate\Support\Facades\Artisan::output();
+    
+    return response()->json([
+        'status' => 'success',
+        'output' => $output,
+        'timestamp' => now()->toDateTimeString()
+    ]);
+});
+
+// External Cron Webhook for Visitor Reports
+// This can be called by services like cron-job.org every minute
+Route::get('/cron/visitor-report/{secret}', function ($secret) {
+    // Verify secret key to prevent unauthorized access
+    if ($secret !== config('app.cron_secret', 'tabdil-sync-512')) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+    
+    // Run the visitor report command
+    \Illuminate\Support\Facades\Artisan::call('visitors:send-report');
+    $output = \Illuminate\Support\Facades\Artisan::output();
+    
+    return response()->json([
+        'status' => 'success',
+        'output' => $output,
+        'timestamp' => now()->toDateTimeString()
+    ]);
+});
+
+// External Cron Webhook for Visitor Smart Alerts
+Route::get('/cron/visitor-alerts/{secret}', function ($secret) {
+    // Verify secret key to prevent unauthorized access
+    if ($secret !== config('app.cron_secret', 'tabdil-sync-512')) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+    
+    // Run the alerts check command
+    \Illuminate\Support\Facades\Artisan::call('visitors:check-alerts');
     $output = \Illuminate\Support\Facades\Artisan::output();
     
     return response()->json([
