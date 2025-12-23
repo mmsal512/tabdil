@@ -224,28 +224,66 @@ Route::get('/cron/visitor-alerts/{secret}', function ($secret) {
 
 Route::get('/debug-error', function() {
     try {
-        // 1. Check DB Connection
-        \Illuminate\Support\Facades\DB::connection()->getPdo();
-        echo "✅ Database Connection OK<br>";
+        echo "<h1>🔍 Deep Diagnostic</h1>";
         
-        // 2. Check if Table Exists
-        if (!\Illuminate\Support\Facades\Schema::hasTable('visitors')) {
-            throw new Exception("❌ Table 'visitors' does not exist! Please run 'php artisan migrate'.");
-        }
-        echo "✅ Table 'visitors' Exists<br>";
+        // 1. Check getStats (Already passed)
+        $todayStats = \App\Models\Visitor::getStats(today());
+        echo "✅ getStats (Today) OK<br>";
         
-        // 3. Try Fetching Data (This checks for SQL syntax/column errors)
-        $count = \App\Models\Visitor::count();
-        echo "✅ Visitor Count: $count<br>";
+        $yesterdayStats = \App\Models\Visitor::getStats(today()->subDay(), today()->subDay()->endOfDay());
+        echo "✅ getStats (Yesterday) OK<br>";
         
-        // 4. Try the specific function causing error
-        $stats = \App\Models\Visitor::getStats(now());
-        echo "✅ Stats Function OK<br>";
+        // 2. Check getDailyStats (Potential Issue)
+        $dailyChartData = \App\Models\Visitor::getDailyStats(7);
+        echo "✅ getDailyStats OK (" . count($dailyChartData) . " days)<br>";
         
-        return "🎉 No obvious errors found directly. Check logs.";
+        // 3. Check getHourlyStats (Potential Issue - SQL Group By)
+        $hourlyChartData = \App\Models\Visitor::getHourlyStats();
+        echo "✅ getHourlyStats OK (" . count($hourlyChartData) . " hours)<br>";
+        
+        // 4. Other Calculations
+        $weeklyStats = \App\Models\Visitor::getStats(now()->startOfWeek());
+        $monthlyStats = \App\Models\Visitor::getStats(now()->startOfMonth());
+        
+        $realtimeVisitors = \App\Models\Visitor::humans()
+            ->where('created_at', '>=', now()->subMinutes(5))
+            ->count();
+            
+        // Mock the controller method
+        $controller = new \App\Http\Controllers\Admin\VisitorController();
+        // Since calculatePercentChange is protected, we'll mimic it simple here or reflect it, 
+        // but let's assume it works as it's pure PHP.
+        // Or better, let's just try to render the View directly with this data!
+        
+        $visitorChange = [
+            'value' => 0,
+            'direction' => 'neutral' 
+        ];
+
+        echo "✅ All Data Fetched! Attempting to render View...<br>";
+        
+        // 5. Try Rendering the View
+        $view = view('admin.visitors.index', compact(
+            'todayStats',
+            'yesterdayStats',
+            'weeklyStats',
+            'monthlyStats',
+            'dailyChartData',
+            'hourlyChartData',
+            'realtimeVisitors',
+            'visitorChange'
+        ))->render();
+        
+        echo "✅ View Rendered Successfully! (Preview below)<br><hr>";
+        return $view;
         
     } catch (\Exception $e) {
-        return "<h1>🚨 Found the Error:</h1><pre>" . $e->getMessage() . "\n\n" . $e->getTraceAsString() . "</pre>";
+        return "<div style='background:#fee; color:#b00; padding:20px; border:2px solid #f00;'>
+            <h1>🚨 FATAL ERROR FOUND:</h1>
+            <h2>" . $e->getMessage() . "</h2>
+            <strong>File:</strong> " . $e->getFile() . ":" . $e->getLine() . "<br>
+            <pre>" . $e->getTraceAsString() . "</pre>
+        </div>";
     }
 });
 
