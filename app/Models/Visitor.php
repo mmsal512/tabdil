@@ -169,10 +169,23 @@ class Visitor extends Model
     public static function getHourlyStats(Carbon $date = null): array
     {
         $date = $date ?? today();
+        $driver = \DB::connection()->getDriverName();
+        
+        // Define SQL based on driver
+        switch ($driver) {
+            case 'pgsql':
+                $select = \DB::raw('EXTRACT(HOUR FROM created_at) as hour');
+                break;
+            case 'sqlite':
+                $select = \DB::raw("strftime('%H', created_at) as hour");
+                break;
+            default: // mysql, mariadb
+                $select = \DB::raw('HOUR(created_at) as hour');
+        }
         
         $stats = self::humans()
             ->whereDate('created_at', $date)
-            ->select(\DB::raw('HOUR(created_at) as hour'), \DB::raw('count(*) as visits'))
+            ->select($select, \DB::raw('count(*) as visits'))
             ->groupBy('hour')
             ->orderBy('hour')
             ->get()
@@ -182,7 +195,8 @@ class Visitor extends Model
         // Fill missing hours with 0
         $result = [];
         for ($i = 0; $i < 24; $i++) {
-            $result[$i] = $stats[$i] ?? 0;
+            $key = $driver === 'sqlite' ? sprintf('%02d', $i) : $i;
+            $result[(int)$i] = $stats[$key] ?? 0; // Cast key to int for consistency
         }
         
         return $result;
@@ -193,9 +207,23 @@ class Visitor extends Model
      */
     public static function getDailyStats(int $days = 7): array
     {
+        $driver = \DB::connection()->getDriverName();
+        
+        // Define SQL based on driver
+        switch ($driver) {
+            case 'pgsql':
+                $select = \DB::raw("to_char(created_at, 'YYYY-MM-DD') as date");
+                break;
+            case 'sqlite':
+                $select = \DB::raw("date(created_at) as date");
+                break;
+            default: // mysql, mariadb
+                $select = \DB::raw('DATE(created_at) as date');
+        }
+
         $stats = self::humans()
             ->where('created_at', '>=', now()->subDays($days))
-            ->select(\DB::raw('DATE(created_at) as date'), \DB::raw('count(*) as visits'))
+            ->select($select, \DB::raw('count(*) as visits'))
             ->groupBy('date')
             ->orderBy('date')
             ->get()
