@@ -222,9 +222,4 @@ Route::get('/cron/visitor-alerts/{secret}', function ($secret) {
     ]);
 });
 
-Route::get('/debug-settings', function() {
-    $settings = \App\Models\VisitorSetting::first();
-    return response()->json($settings);
-});
-
 require __DIR__.'/auth.php';

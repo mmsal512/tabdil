@@ -73,37 +73,42 @@ class VisitorController extends Controller
     public function updateSettings(Request $request)
     {
         \Illuminate\Support\Facades\Log::info('Visitor Settings Update Request Started');
-        \Illuminate\Support\Facades\Log::info('Request Data:', $request->all());
+        \Illuminate\Support\Facades\Log::info('Request Data:', $request->except(['_token']));
 
-        $validated = $request->validate([
-            'notifications_enabled' => 'boolean',
-            'notification_interval_hours' => 'required|integer|min:1|max:720',
-            'telegram_bot_token' => 'nullable|string',
-            'telegram_chat_id' => 'nullable|string',
-            'n8n_webhook_url' => 'nullable|url',
-            'use_n8n' => 'boolean',
-            'report_language' => 'required|in:ar,en,auto',
-            'smart_alerts_enabled' => 'boolean',
-            'spike_threshold_percent' => 'required|integer|min:50|max:1000',
-            'drop_threshold_percent' => 'required|integer|min:10|max:100',
-        ]);
+        try {
+            $validated = $request->validate([
+                'notifications_enabled' => 'sometimes',
+                'notification_interval_hours' => 'required|numeric|min:1|max:720',
+                'telegram_bot_token' => 'nullable|string',
+                'telegram_chat_id' => 'nullable|string',
+                'n8n_webhook_url' => 'nullable|url',
+                'use_n8n' => 'sometimes',
+                'report_language' => 'required|in:ar,en,auto',
+                'smart_alerts_enabled' => 'sometimes',
+                'spike_threshold_percent' => 'required|numeric|min:50|max:1000',
+                'drop_threshold_percent' => 'required|numeric|min:10|max:100',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Illuminate\Support\Facades\Log::error('Validation Failed:', $e->errors());
+            throw $e;
+        }
 
         $settings = VisitorSetting::getInstance();
         
         \Illuminate\Support\Facades\Log::info('Current Settings ID: ' . $settings->id);
 
         try {
-            // Explicitly set values
+            // Explicitly set values with strict type casting
             $settings->notifications_enabled = $request->has('notifications_enabled');
-            $settings->notification_interval_hours = $request->input('notification_interval_hours');
-            $settings->telegram_bot_token = $request->input('telegram_bot_token');
-            $settings->telegram_chat_id = $request->input('telegram_chat_id');
+            $settings->notification_interval_hours = (int) $request->input('notification_interval_hours');
+            $settings->telegram_bot_token = $request->input('telegram_bot_token'); // Keep as string
+            $settings->telegram_chat_id = (string) $request->input('telegram_chat_id'); // Ensure string
             $settings->n8n_webhook_url = $request->input('n8n_webhook_url');
             $settings->use_n8n = $request->has('use_n8n');
             $settings->report_language = $request->input('report_language');
             $settings->smart_alerts_enabled = $request->has('smart_alerts_enabled');
-            $settings->spike_threshold_percent = $request->input('spike_threshold_percent');
-            $settings->drop_threshold_percent = $request->input('drop_threshold_percent');
+            $settings->spike_threshold_percent = (int) $request->input('spike_threshold_percent');
+            $settings->drop_threshold_percent = (int) $request->input('drop_threshold_percent');
             
             \Illuminate\Support\Facades\Log::info('Settings Object Before Save:', $settings->toArray());
             
@@ -111,10 +116,6 @@ class VisitorController extends Controller
             
             \Illuminate\Support\Facades\Log::info('Save Result: ' . ($saved ? 'TRUE' : 'FALSE'));
             
-            // Re-fetch to verify
-            $verify = VisitorSetting::find($settings->id);
-            \Illuminate\Support\Facades\Log::info('Settings from DB after save:', $verify->toArray());
-
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Error saving settings: ' . $e->getMessage());
             return back()->with('error', 'Error saving: ' . $e->getMessage());
