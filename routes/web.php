@@ -222,4 +222,31 @@ Route::get('/cron/visitor-alerts/{secret}', function ($secret) {
     ]);
 });
 
+Route::get('/debug-error', function() {
+    try {
+        // 1. Check DB Connection
+        \Illuminate\Support\Facades\DB::connection()->getPdo();
+        echo "✅ Database Connection OK<br>";
+        
+        // 2. Check if Table Exists
+        if (!\Illuminate\Support\Facades\Schema::hasTable('visitors')) {
+            throw new Exception("❌ Table 'visitors' does not exist! Please run 'php artisan migrate'.");
+        }
+        echo "✅ Table 'visitors' Exists<br>";
+        
+        // 3. Try Fetching Data (This checks for SQL syntax/column errors)
+        $count = \App\Models\Visitor::count();
+        echo "✅ Visitor Count: $count<br>";
+        
+        // 4. Try the specific function causing error
+        $stats = \App\Models\Visitor::getStats(now());
+        echo "✅ Stats Function OK<br>";
+        
+        return "🎉 No obvious errors found directly. Check logs.";
+        
+    } catch (\Exception $e) {
+        return "<h1>🚨 Found the Error:</h1><pre>" . $e->getMessage() . "\n\n" . $e->getTraceAsString() . "</pre>";
+    }
+});
+
 require __DIR__.'/auth.php';
