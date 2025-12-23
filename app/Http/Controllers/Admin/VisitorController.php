@@ -72,9 +72,6 @@ class VisitorController extends Controller
      */
     public function updateSettings(Request $request)
     {
-        \Illuminate\Support\Facades\Log::info('Visitor Settings Update Request Started');
-        \Illuminate\Support\Facades\Log::info('Request Data:', $request->except(['_token']));
-
         try {
             $validated = $request->validate([
                 'notifications_enabled' => 'sometimes',
@@ -89,20 +86,17 @@ class VisitorController extends Controller
                 'drop_threshold_percent' => 'required|numeric|min:10|max:100',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Illuminate\Support\Facades\Log::error('Validation Failed:', $e->errors());
-            throw $e;
+            return back()->with('error', __('validation.custom.settings_invalid'));
         }
 
         $settings = VisitorSetting::getInstance();
         
-        \Illuminate\Support\Facades\Log::info('Current Settings ID: ' . $settings->id);
-
         try {
             // Explicitly set values with strict type casting
             $settings->notifications_enabled = $request->has('notifications_enabled');
             $settings->notification_interval_hours = (int) $request->input('notification_interval_hours');
-            $settings->telegram_bot_token = $request->input('telegram_bot_token'); // Keep as string
-            $settings->telegram_chat_id = (string) $request->input('telegram_chat_id'); // Ensure string
+            $settings->telegram_bot_token = $request->input('telegram_bot_token');
+            $settings->telegram_chat_id = (string) $request->input('telegram_chat_id');
             $settings->n8n_webhook_url = $request->input('n8n_webhook_url');
             $settings->use_n8n = $request->has('use_n8n');
             $settings->report_language = $request->input('report_language');
@@ -110,11 +104,7 @@ class VisitorController extends Controller
             $settings->spike_threshold_percent = (int) $request->input('spike_threshold_percent');
             $settings->drop_threshold_percent = (int) $request->input('drop_threshold_percent');
             
-            \Illuminate\Support\Facades\Log::info('Settings Object Before Save:', $settings->toArray());
-            
-            $saved = $settings->save();
-            
-            \Illuminate\Support\Facades\Log::info('Save Result: ' . ($saved ? 'TRUE' : 'FALSE'));
+            $settings->save();
             
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Error saving settings: ' . $e->getMessage());
