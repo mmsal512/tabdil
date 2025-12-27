@@ -48,7 +48,7 @@ class VisitorReportService
     }
 
     /**
-     * Send smart alert (spike/drop detection)
+     * Send smart alert (Daily Analysis at 11 PM)
      */
     public function checkAndSendSmartAlert(): bool
     {
@@ -58,23 +58,36 @@ class VisitorReportService
             return false;
         }
 
-        // Compare current hour with same hour yesterday
-        $currentHourVisitors = Visitor::humans()
-            ->where('created_at', '>=', now()->startOfHour())
-            ->count();
-
-        $yesterdaySameHourVisitors = Visitor::humans()
-            ->whereBetween('created_at', [
-                now()->subDay()->startOfHour(),
-                now()->subDay()->endOfHour()
-            ])
-            ->count();
-
-        if ($yesterdaySameHourVisitors === 0) {
-            return false; // Can't compare
+        // 1. Time Guard: run ONLY at 11 PM (Hour 23)
+        // This ensures checking only once at end of day, regardless of cron frequency
+        if (now()->hour < 23) {
+            return false;
         }
 
-        $changePercent = (($currentHourVisitors - $yesterdaySameHourVisitors) / $yesterdaySameHourVisitors) * 100;
+        // 2. Cache Lock: Prevent duplicates if cron runs multiple times during hour 23
+        $cacheKey = 'visitor_smart_alert_sent_' . now()->toDateString();
+        if (\Illuminate\Support\Facades\Cache::has($cacheKey)) {
+            return false;
+        }
+
+        // 3. Daily Stats Logic (Today vs Yesterday)
+        $currentVisitors = Visitor::humans()->whereDate('created_at', today())->count();
+        $previousVisitors = Visitor::humans()->whereDate('created_at', today()->subDay())->count();
+
+        // 4. Threshold Check (Avoid noise)
+        // Ignore alerts if traffic is very low (less than 50 visitors)
+        if ($currentVisitors < 50 && $previousVisitors < 50) {
+            // Mark as checked to avoid re-checking every minute in hour 23
+            \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addHours(2));
+            return false;
+        }
+
+        // 5. Calculate Change
+        if ($previousVisitors === 0) {
+            $changePercent = $currentVisitors > 0 ? 100 : 0;
+        } else {
+            $changePercent = (($currentVisitors - $previousVisitors) / $previousVisitors) * 100;
+        }
 
         $alertType = null;
         if ($changePercent >= $settings->spike_threshold_percent) {
@@ -84,12 +97,22 @@ class VisitorReportService
         }
 
         if ($alertType) {
-            $message = $this->generateSmartAlertMessage($alertType, $currentHourVisitors, $yesterdaySameHourVisitors, $changePercent, $settings);
+            $message = $this->generateSmartAlertMessage($alertType, $currentVisitors, $previousVisitors, $changePercent, $settings);
             
-            return $settings->use_n8n 
+            $sent = $settings->use_n8n 
                 ? $this->sendViaN8n($message, ['alert_type' => $alertType], $settings)
                 : $this->sendDirectTelegram($message, $settings);
+
+            if ($sent) {
+                // Lock for today
+                \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addHours(2));
+            }
+
+            return $sent;
         }
+        
+        // Even if no alert sent, lock so we don't calculate again today
+        \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addHours(2));
 
         return false;
     }
@@ -233,7 +256,7 @@ class VisitorReportService
     }
 
     /**
-     * Generate smart alert message
+     * Generate smart alert message (Daily Context)
      */
     protected function generateSmartAlertMessage(string $type, int $current, int $previous, float $changePercent, VisitorSetting $settings): string
     {
@@ -242,32 +265,32 @@ class VisitorReportService
 
         if ($lang === 'ar') {
             if ($type === 'spike') {
-                return "🔥 *تنبيه: ارتفاع مفاجئ في الزيارات!*\n\n" .
-                    "الزوار الآن: {$current}\n" .
-                    "نفس الساعة أمس: {$previous}\n" .
+                return "🔥 *تحليل الزيارات اليومي: ارتفاع ملحوظ!*\n\n" .
+                    "إجمالي اليوم: {$current}\n" .
+                    "إجمالي الأمس: {$previous}\n" .
                     "نسبة الزيادة: {$changePercent}%\n\n" .
-                    "💡 قد يكون هناك حملة ناجحة أو محتوى viral!";
+                    "💡 أداء ممتاز اليوم! تحقق مما اجتذب الزوار.";
             } else {
-                return "⚠️ *تنبيه: انخفاض مفاجئ في الزيارات!*\n\n" .
-                    "الزوار الآن: {$current}\n" .
-                    "نفس الساعة أمس: {$previous}\n" .
+                return "⚠️ *تحليل الزيارات اليومي: انخفاض!*\n\n" .
+                    "إجمالي اليوم: {$current}\n" .
+                    "إجمالي الأمس: {$previous}\n" .
                     "نسبة الانخفاض: {$changePercent}%\n\n" .
-                    "🔍 تحقق من أن الموقع يعمل بشكل طبيعي.";
+                    "🔍 مقارنة بالأمس، الحركة اليوم أقل.";
             }
         }
 
         if ($type === 'spike') {
-            return "🔥 *Alert: Sudden Traffic Spike!*\n\n" .
-                "Current visitors: {$current}\n" .
-                "Same hour yesterday: {$previous}\n" .
+            return "🔥 *Daily Traffic Analysis: Spike Detected!*\n\n" .
+                "Today Total: {$current}\n" .
+                "Yesterday Total: {$previous}\n" .
                 "Increase: {$changePercent}%\n\n" .
-                "💡 You might have a successful campaign or viral content!";
+                "💡 Great performance today!";
         } else {
-            return "⚠️ *Alert: Sudden Traffic Drop!*\n\n" .
-                "Current visitors: {$current}\n" .
-                "Same hour yesterday: {$previous}\n" .
+            return "⚠️ *Daily Traffic Analysis: Drop Detected!*\n\n" .
+                "Today Total: {$current}\n" .
+                "Yesterday Total: {$previous}\n" .
                 "Decrease: {$changePercent}%\n\n" .
-                "🔍 Check if your site is working properly.";
+                "🔍 Traffic is lower compared to yesterday.";
         }
     }
 
