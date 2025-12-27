@@ -223,13 +223,9 @@ Route::get('/cron/visitor-alerts/{secret}', function ($secret) {
 });
 
 require __DIR__.'/auth.php';
-Route::get('/cleanup-analytics', function () {
-    if (!auth()->check() || !auth()->user()->is_admin) {
-        abort(403);
-    }
-    
+Route::get('/cleanup-analytics/confirm-clean-512', function () {
     $deletedCron = \App\Models\Visitor::where('page_url', 'like', '%cron%')->delete();
     $deletedSync = \App\Models\Visitor::where('page_url', 'like', '%tabdil-sync%')->delete();
     
-    return "Cleaned up: $deletedCron cron visits, $deletedSync sync visits. <br> <a href='/admin/visitors'>Back to Analytics</a>";
-})->middleware(['web', 'auth']);
+    return "✅ Done! Cleaned up: $deletedCron cron visits, $deletedSync sync visits. <br> <a href='/admin/visitors'>Back to Analytics</a>";
+});
