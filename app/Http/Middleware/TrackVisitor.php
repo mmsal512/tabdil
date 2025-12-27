@@ -31,9 +31,15 @@ class TrackVisitor
             return $next($request);
         }
 
-        // Skip logged-in Admins (Admin traffic exclusion)
-        if (auth()->check() && auth()->user()->is_admin) {
-            return $next($request);
+        // Skip logged-in Admins ONLY (Allow regular users)
+        if (auth()->check()) {
+            $user = auth()->user();
+            if (
+                ($user->email === 'admin@tabdil.com') || 
+                (isset($user->user_type) && trim(strtolower($user->user_type)) === 'admin')
+            ) {
+                return $next($request);
+            }
         }
 
         // Skip asset requests
