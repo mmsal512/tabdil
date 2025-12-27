@@ -32,7 +32,7 @@
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium">{{ __('Recent Admin Logs') }}</h3>
                         <div class="flex gap-3">
-                            <a href="{{ route('admin.visitors.index') }}" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">📊 {{ __('Visitor Analytics') }}</a>
+                            <a href="{{ route('admin.visitors.index') }}" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">📊 {{ __('visitors.analytics_dashboard') }}</a>
                             <a href="{{ route('admin.backup-rates') }}" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">{{ __('Backup Rates') }}</a>
                             <a href="{{ route('admin.api-settings') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">{{ __('API Settings') }}</a>
                         </div>
