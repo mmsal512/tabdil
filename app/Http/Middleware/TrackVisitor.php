@@ -31,6 +31,11 @@ class TrackVisitor
             return $next($request);
         }
 
+        // Skip logged-in Admins (Admin traffic exclusion)
+        if (auth()->check() && auth()->user()->is_admin) {
+            return $next($request);
+        }
+
         // Skip asset requests
         if ($this->isAssetRequest($request)) {
             return $next($request);
