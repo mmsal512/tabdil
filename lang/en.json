@@ -260,5 +260,6 @@
     "visitors.settings_saved": "Settings saved successfully!",
     "visitors.test_notification_sent": "Test notification sent successfully!",
     "visitors.test_notification_failed": "Failed to send test notification. Check your settings.",
-    "Visitor Analytics": "Visitor Analytics"
+    "Visitor Analytics": "Visitor Analytics",
+    "visitors.single_visit": "visit"
 }

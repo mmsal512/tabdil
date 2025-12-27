@@ -459,5 +459,6 @@
     "visitors.settings_saved": "تم حفظ الإعدادات بنجاح!",
     "visitors.test_notification_sent": "تم إرسال التنبيه التجريبي بنجاح!",
     "visitors.test_notification_failed": "فشل إرسال التنبيه التجريبي. تحقق من الإعدادات.",
-    "Visitor Analytics": "تحليلات الزوار"
+    "visitors.Analytics": "تحليلات الزوار",
+    "visitors.single_visit": "زيارة"
 }

@@ -149,7 +149,7 @@
                         @forelse($todayStats['country_breakdown']->take(5) as $country)
                             <div class="flex items-center justify-between">
                                 <span>{{ $country->country_name ?? __('visitors.unknown') }}</span>
-                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">{{ $country->visits }}</span>
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">{{ $country->visits }} {{ __('visitors.single_visit') }}</span>
                             </div>
                         @empty
                             <div class="text-gray-500 text-sm">{{ __('visitors.no_data') }}</div>
@@ -166,7 +166,7 @@
                                 <span class="text-sm truncate max-w-[180px]" title="{{ $page->page_url }}">
                                     {{ str_replace(url('/'), '', $page->page_url) ?: '/' }}
                                 </span>
-                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">{{ $page->visits }}</span>
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">{{ $page->visits }} {{ __('visitors.single_visit') }}</span>
                             </div>
                         @empty
                             <div class="text-gray-500 text-sm">{{ __('visitors.no_data') }}</div>
@@ -183,7 +183,7 @@
                                 <span class="text-sm truncate max-w-[180px]" title="{{ $ref->referrer_domain }}">
                                     {{ $ref->referrer_domain }}
                                 </span>
-                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">{{ $ref->visits }}</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">{{ $ref->visits }} {{ __('visitors.single_visit') }}</span>
                             </div>
                         @empty
                             <div class="text-gray-500 text-sm">{{ __('visitors.direct_traffic') }}</div>
