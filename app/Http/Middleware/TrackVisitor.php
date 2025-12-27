@@ -27,7 +27,7 @@ class TrackVisitor
     public function handle(Request $request, Closure $next): Response
     {
         // Skip AJAX requests and API calls
-        if ($request->ajax() || $request->is('api/*')) {
+        if ($request->ajax() || $request->is('api/*') || $request->is('cron/*')) {
             return $next($request);
         }
 
