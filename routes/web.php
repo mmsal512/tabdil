@@ -224,8 +224,11 @@ Route::get('/cron/visitor-alerts/{secret}', function ($secret) {
 
 require __DIR__.'/auth.php';
 Route::get('/cleanup-analytics/confirm-clean-512', function () {
-    $deletedCron = \App\Models\Visitor::where('page_url', 'like', '%cron%')->delete();
-    $deletedSync = \App\Models\Visitor::where('page_url', 'like', '%tabdil-sync%')->delete();
+    // Delete ALL visitor data (Reset to Zero)
+    \App\Models\Visitor::truncate();
     
-    return "✅ Done! Cleaned up: $deletedCron cron visits, $deletedSync sync visits. <br> <a href='/admin/visitors'>Back to Analytics</a>";
+    // Also clear cache to ensure charts update immediately
+    \Illuminate\Support\Facades\Cache::flush();
+    
+    return "✅ Done! All analytics data has been wiped. Site is clean. <br> <a href='/admin/visitors'>Back to Analytics</a>";
 });
